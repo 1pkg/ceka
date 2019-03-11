@@ -2,20 +2,6 @@ pragma solidity ^0.5;
 
 // main contract
 contract Ceka {
-
-    // todo implement
-    // ordered bidirectional linked list
-    struct OBLL {
-        // node self value
-        uint256 value;
-        // node self adress
-        address self;
-        // node next adress
-        address next;
-        // node prev adress
-        address prev;
-    }
-
     // participiant related data
     struct Participant {
         // participiant amount
@@ -50,9 +36,6 @@ contract Ceka {
 
     // contract last successor adress
     address private lsAdress;
-
-    // contract participants OBLL
-    OBLL private participantsOBLL;
 
     // contract participants Map
     mapping (address => Participant) private participantsMap;
