@@ -1,6 +1,7 @@
 pragma solidity ^0.5;
 
 import "./../interfaces/foladt.sol";
+import "./../interfaces/ownable.sol";
 
 /**
  * @title fixed ordered bidirectional linked list implementation of foladt
@@ -8,7 +9,15 @@ import "./../interfaces/foladt.sol";
  * @dev note all indexations start from 1
  * @inheritdoc
  */
-contract FOBLL is FOLADT {
+contract FOBLL is FOLADT, Ownable {
+    /**
+     * @title initialize fobll with max size param
+     * @param capacity max size of fobll
+     */
+    constructor(uint32 capacity) public {
+        __capacity = capacity;
+    }
+
     /// @inheritdoc
     function size() public view returns(uint32) {
         return __size;
@@ -25,7 +34,10 @@ contract FOBLL is FOLADT {
     }
 
     /// @inheritdoc
-    function push(address key, uint256 value) public {
+    function push(address key, uint256 value) public owner {
+        // in case of invalid address specified
+        require(key != address(0), "Invalid key specified");
+
         // before start placement remove node from fobll
         // replace node everytime isntead of update existed value
         __remove(key);
@@ -46,9 +58,7 @@ contract FOBLL is FOLADT {
     /// @inheritdoc
     function index(address key) public returns(uint32) {
         // in case of invalid address specified
-        if (key == address(0)) {
-            return 0;
-        }
+        require(key != address(0), "Invalid key specified");
 
         uint32 idx = 1; // index start from first node
         // iterate over all fobll nodes from head to tail
@@ -73,9 +83,7 @@ contract FOBLL is FOLADT {
     /// @inheritdoc
     function at(uint32 idx) public view returns(address) {
         // in case of invalid index specified
-        if (idx == 0 || idx > __size) {
-            return address(0);
-        }
+        require(idx != 0 && idx <= __size, "Invalid index specified");
 
         uint32 lidx = 1; // index start from first node
         // iterate over all fobll nodes from head to tail
@@ -98,13 +106,13 @@ contract FOBLL is FOLADT {
     }
 
     /// @inheritdoc
-    function remove(uint32 idx) public {
+    function remove(uint32 idx) public owner {
         // use remove by key and at methods
         __remove(at(idx));
     }
 
     /// @inheritdoc
-    function clear() public {
+    function clear() public owner {
         // clear whole list
         for (uint32 idx = 1; idx < __size; idx++) remove(idx);
         __size = 0;
@@ -113,13 +121,10 @@ contract FOBLL is FOLADT {
 
     /// @inheritdoc
     function slice(uint32 start, uint32 finish) public view returns(address[] memory) {
-        address[] memory result;
         // in case of invalid indexes specified
-        if (start == 0 || finish == 0 || start > finish || start > __size || finish > __size) {
-            return result;
-        }
-        result = new address[](finish - start);
+        require(start != 0 && finish != 0 && start <= finish && finish <= __size, "Invalid indexes specified");
 
+        address[] memory result = new address[](finish - start);
         uint32 idx = 1; // index start from first node
         // iterate over all fobll nodes from head to tail
         address iterator = __head;
@@ -283,9 +288,9 @@ contract FOBLL is FOLADT {
     }
 
     // size of fobll
-    uint32 __size;
+    uint32 private __size;
     // capacity of fobll
-    uint32 __capacity;
+    uint32 private __capacity;
 
     // inner node struct of fobll
     struct Node {
