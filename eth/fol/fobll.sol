@@ -3,35 +3,37 @@ pragma solidity ^0.5;
 import "./../interfaces/foladt.sol";
 
 /**
- * fixed ordered bidirectional linked list implementation of foladt
+ * @title fixed ordered bidirectional linked list implementation of foladt
+ * @dev all fobll operation O(1) [note max iterations count eq capacity]
+ * @dev note all indexations start from 1
  * @inheritdoc
  */
 contract FOBLL is FOLADT {
     /// @inheritdoc
-    function size() public view returns(uint32) { // O(1)
+    function size() public view returns(uint32) {
         return __size;
     }
 
     /// @inheritdoc
-    function capacity() public view returns(uint32) { // O(1)
+    function capacity() public view returns(uint32) {
         return __capacity;
     }
 
     /// @inheritdoc
-    function empty() public view returns(bool) { // O(1)
+    function empty() public view returns(bool) {
         return __head == address(0) && __tail == address(0) && __size == 0;
     }
 
     /// @inheritdoc
-    function push(address key, uint256 value) public { // O(1) [note max iterations count eq capacity]
-        // before start placement remove node from list
+    function push(address key, uint256 value) public {
+        // before start placement remove node from fobll
         // replace node everytime isntead of update existed value
-        remove(key);
+        __remove(key);
 
-        // in case of empty list 
-        // place single node into list
+        // in case of empty fobll 
+        // place single node into fobll
         // than break from place method
-        // as placement was done
+        // as placement was done already
         if (empty()) {
             __between(key, value, address(0), address(0));
             return;
@@ -42,8 +44,109 @@ contract FOBLL is FOLADT {
     }
 
     /// @inheritdoc
-    function remove(address self) public { // O(1)
-        Node memory node = __nodes[self];
+    function index(address key) public returns(uint32) {
+        // in case of invalid address specified
+        if (key == address(0)) {
+            return 0;
+        }
+
+        uint32 idx = 1; // index start from first node
+        // iterate over all fobll nodes from head to tail
+        address iterator = __head;
+        while (iterator != __tail || iterator == address(0)) {
+            Node memory node = __nodes[iterator];
+            if (node.self != key) {
+                // update fobll iterator
+                iterator = node.next;
+                // update iteration break index
+                ++idx;
+                // skip while we not find right node
+                continue;
+            }
+
+            // in case we found right node 
+            return idx;
+        }
+        return 0;
+    }
+
+    /// @inheritdoc
+    function at(uint32 idx) public view returns(address) {
+        // in case of invalid index specified
+        if (idx == 0 || idx > __size) {
+            return address(0);
+        }
+
+        uint32 lidx = 1; // index start from first node
+        // iterate over all fobll nodes from head to tail
+        address iterator = __head;
+        while (iterator != __tail || iterator == address(0)) {
+            Node memory node = __nodes[iterator];
+            if (idx != lidx) {
+                // update fobll iterator
+                iterator = node.next;
+                // update iteration break index
+                ++lidx;
+                // skip while we not find right node
+                continue;
+            }
+
+            // in case we found right node 
+            return node.self;
+        }
+        return address(0);
+    }
+
+    /// @inheritdoc
+    function remove(uint32 idx) public {
+        // use remove by key and at methods
+        __remove(at(idx));
+    }
+
+    /// @inheritdoc
+    function clear() public {
+        // clear whole list
+        for (uint32 idx = 1; idx < __size; idx++) remove(idx);
+        __size = 0;
+        __head = __tail = address(0);
+    }
+
+    /// @inheritdoc
+    function slice(uint32 start, uint32 finish) public view returns(address[] memory) {
+        address[] memory result;
+        // in case of invalid indexes specified
+        if (start == 0 || finish == 0 || start > finish || start > __size || finish > __size) {
+            return result;
+        }
+        result = new address[](finish - start);
+
+        uint32 idx = 1; // index start from first node
+        // iterate over all fobll nodes from head to tail
+        address iterator = __head;
+        while (iterator != __tail || iterator == address(0)) {
+            Node memory node = __nodes[iterator];
+            if (start > idx || finish < idx) {
+                // update fobll iterator
+                iterator = node.next;
+                // update iteration break index
+                ++idx;
+                // skip while we not find right nodes
+                continue;
+            }
+
+            // in case we found right node 
+            result[idx - start] = node.self;
+        }
+        return result;
+    }
+
+    /**
+     * @title remove element from fobll by key, if elemnt already exists
+     * @dev update size constraints
+     * @param key element identifier
+     */
+    function __remove(address key) private {
+        Node memory node = __nodes[key];
         // in case node not exists 
         if (node.self == address(0)) {
             return;
@@ -73,86 +176,25 @@ contract FOBLL is FOLADT {
             __nodes[node.next].prev = node.prev;
         }
 
-        // update list size
+        // update fobll size
         --__size;
         // clear node data
-        delete __nodes[self];
-    }
-
-    /// @inheritdoc
-    function at(uint32 index) public view returns(address) { // O(1) [note max iterations count eq capacity]
-        // in case of invalid index specified
-        if (index > __size) {
-            return address(0);
-        }
-
-        uint32 idx = 1; // index start from first node
-        // iterate over all list nodes from head to tail
-        address iterator = __head;
-        while (iterator != __tail || iterator == address(0)) {
-            Node memory node = __nodes[iterator];
-            if (index != idx) {
-                // update list iterator
-                iterator = node.next;
-                // update iteration break index
-                ++idx;
-                // skip while we not find right node
-                continue;
-            }
-
-            // in case we found right node 
-            return node.self;
-        }
-    }
-
-    /// @inheritdoc
-    function slice(uint32 start, uint32 finish) public view returns(address[] memory) { // O(1) [note max iterations count eq capacity]
-        address[] memory result;
-        // in case of invalid indexes specified
-        if (start > finish || start > __size || finish > __size) {
-            return result;
-        }
-        result = new address[](finish - start);
-
-        uint32 idx = 1; // index start from first node
-        // iterate over all list nodes from head to tail
-        address iterator = __head;
-        while (iterator != __tail || iterator == address(0)) {
-            Node memory node = __nodes[iterator];
-            if (start > idx || finish < idx) {
-                // update list iterator
-                iterator = node.next;
-                // update iteration break index
-                ++idx;
-                // skip while we not find right nodes
-                continue;
-            }
-
-            // in case we found right node 
-            result[idx - start] = node.self;
-        }
-        return result;
-    }
-
-    /// @inheritdoc
-    function clear() public { // O(1)
-        __head = __tail = address(0);
-        __size = 0;
+        delete __nodes[key];
     }
 
     /**
-     * @title place node into the list by order, correctly processed single item list and multi items list
-     * @param self adress of new node
+     * @title place node into the fobll by order, correctly processed single item fobll and multi items fobll
+     * @param key adress of new node
      * @param value value of new node
      */
-    function __place(address self, uint256 value) private { // O(1) [note max iterations count eq capacity]
+    function __place(address key, uint256 value) private {
         uint32 idx = 1; // index start from first node
-        // iterate over all list nodes from head to tail
+        // iterate over all fobll nodes from head to tail
         address iterator = __head;
         do {
             Node memory node = __nodes[iterator];
             if (node.value >= value) {
-                // update list iterator
+                // update fobll iterator
                 iterator = node.next;
                 // update iteration break index
                 ++idx;
@@ -161,22 +203,21 @@ contract FOBLL is FOLADT {
                 continue;
             }
 
-            // in case list is already full
+            // in case fobll is already full
             // and new node value is lower than min existed
             // break from place method
-            // as placement was done
             if (idx > __capacity) {
                 return;
             }
 
-            // add new node to the list before current node
-            __between(self, value, node.prev, node.self);
+            // add new node to the fobll before current node
+            __between(key, value, node.prev, node.self);
 
-            // in case placement done in middle of list
-            // and list size growth over capacity
+            // in case placement done in middle of fobll
+            // and fobll size growth over capacity
             // remove __tail element
             if (__size > __capacity) {
-                remove(__tail);
+                __remove(__tail);
             }
 
             // break from place method
@@ -184,32 +225,31 @@ contract FOBLL is FOLADT {
             return;
         } while (iterator != __tail || iterator == address(0));
 
-        // in case of list lowest new node value
-        // append new node to list tail node
+        // in case of fobll lowest new node value
+        // append new node to fobll tail node
 
-        // in case list is already full
+        // in case fobll is already full
         // break from place method
-        // as placement was done
         if (__size >= __capacity) {
             return;
         }
 
-        // add new node to the end of list
-        __between(self, value, __tail, address(0));
+        // add new node to the end of fobll
+        __between(key, value, __tail, address(0));
     }
 
     /**
      * @title create new node with address and value between prev address and next address
-     * @param self adress of new node
+     * @param key adress of new node
      * @param value value of new node
      * @param prev ptr to prev node
      * @param next prt to next node
      */
-    function __between(address self, uint256 value, address prev, address next) private { // O(1)
-        // add new node to the list before next node and prev node 
-        __nodes[self] = Node({
+    function __between(address key, uint256 value, address prev, address next) private {
+        // add new node to the fobll before next node and prev node 
+        __nodes[key] = Node({
             value: value,
-            self: self,
+            self: key,
             prev: prev,
             next: next
         });
@@ -217,28 +257,28 @@ contract FOBLL is FOLADT {
         // in case prev node is tail node
         // declare new node as new tail node
         if (prev == __tail) {
-            __tail == self;
+            __tail == key;
         }
 
         // in case next node is head node
         // declare new node as new head node
         if (next == __head) {
-            __head == self;
+            __head == key;
         }
 
         // in case prev node exists
         // change old prev node next ptr to new node
         if (prev != address(0)) {
-            __nodes[prev].next = self;
+            __nodes[prev].next = key;
         }
 
         // in case next node exists
         // change old next node prev ptr to new node
         if (next != address(0)) {
-            __nodes[next].prev = self;
+            __nodes[next].prev = key;
         }
 
-        // update list size
+        // update fobll size
         ++__size;
     }
 
