@@ -2,7 +2,6 @@ pragma solidity ^0.5;
 
 /**
  * @title fixed ordered list abstract data type keep limited elements number each [key element identifier => payload element value] with specific payload order 
- * @dev contain methods: size, capacity, empty, push, index, at, remove, clear, slice
  */
 interface FOLADT {
     /**
