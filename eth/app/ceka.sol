@@ -3,6 +3,7 @@ pragma solidity ^0.5;
 import "./../interfaces/aceka.sol";
 import "./../interfaces/achart.sol";
 import "./../helpers/finite.sol";
+import "./../helpers/wiped.sol";
 import "./../fol/fobll.sol";
 
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
@@ -11,7 +12,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
  * @title crypto e-redistribution kindly application implementation of aceka
  * @inheritdoc
  */
-contract CEKA is ACEKA, AChart, Finite {
+contract CEKA is ACEKA, AChart, Finite, Wiped {
     // using SafeMath for calculation
     using SafeMath for uint256;
 
@@ -51,11 +52,10 @@ contract CEKA is ACEKA, AChart, Finite {
      * @param pputAmntMin put amount min constraint
      * @param pputAmntMax put amount max constraint
      * @param prthRate return to hold rate
-     * @param prthAddress return to hold rate
-     * @param pssAddress sub successor adress
      * @param psmCount successors main count
      * @param psaCount successors all count
      * @param pssRate successors split rate
+    * @param pssAddress sub successor adress
      */
     constructor(
         uint256 ptsStart,
@@ -64,11 +64,10 @@ contract CEKA is ACEKA, AChart, Finite {
         uint256 pputAmntMin,
         uint256 pputAmntMax,
         uint32 prthRate,
-        address payable prthAddress,
-        address payable pssAddress,
         uint32 psmCount,
         uint32 psaCount,
-        uint32 pssRate
+        uint32 pssRate,
+        address payable pssAddress
     ) public payable Finite(ptsStart, ptsFinish) {
         // init ctor params
         putTsDelta = pputTsDelta;
@@ -76,10 +75,12 @@ contract CEKA is ACEKA, AChart, Finite {
         putAmntMax = pputAmntMax;
         rthRate = prthRate;
         rthAddress = prthAddress;
-        __ssAddress = pssAddress;
         psmCount = smCount;
         psaCount = saCount;
         pssRate = ssRate;
+
+        rthAddress = msg.sender;
+        __ssAddress = pssAddress;
 
         // init amounts
         amntInit = amntTotal = amntClean = amntCurrent = msg.value;
@@ -173,8 +174,8 @@ contract CEKA is ACEKA, AChart, Finite {
 
     /// @inheritdoc
     function top(uint32 count) external view returns(address[] memory, uint256[] memory) {
-        uint32 size = __fobll.size();
         // check count constraint and fix it
+        uint32 size = __fobll.size();
         uint32 fcount = count == 0 || count > size ? size : count;
         // get top slice from fobll
         address[] memory addrs = __fobll.slice(0, fcount);
@@ -194,6 +195,7 @@ contract CEKA is ACEKA, AChart, Finite {
         }
 
         // in case contract still in put phase
+        // call parent implementation
         if (!Finite.finish()) {
            return false;
         }
@@ -219,6 +221,23 @@ contract CEKA is ACEKA, AChart, Finite {
         // finis is done now
         // contract is swithched in get phase
         return true;
+    }
+
+    /// @inheritdoc
+    function _canwipe() internal returns(bool) {
+        // get all participiants fromfobll
+        uint32 size = __fobll.size();
+        address[] memory addrs = __fobll.slice(0, __fobll.size());
+        for (uint32 idx = 0; idx < size; idx++) {
+            // if any participiant wasn't got already 
+            Participant memory participant = __get(msg.sender, false);
+            if (participant.addr != address(0) && !participant.prcsd) {
+                return false;
+            }
+        }
+
+        // call parent implementation
+        return Wiped._canwipe();
     }
 
     /**

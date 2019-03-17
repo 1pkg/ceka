@@ -1,0 +1,18 @@
+pragma solidity ^0.5;
+
+import "./ownable.sol";
+
+/// @title contract that can be wiped out by owner
+contract Wiped is Ownable {
+    /// @title transfer all funds to the owner and wipe out the contract
+    function wipe() public owner {
+        require(_canwipe(), "Invalid canwipe breaks"); 
+        selfdestruct(cowner);
+    }
+
+    /// @title check that contract can be wiped out
+    function _canwipe() internal returns(bool) {
+        // can be wiped out anyway
+        return true;
+    }
+}
