@@ -3,11 +3,15 @@ pragma solidity ^0.5;
 import "./../interfaces/aceka.sol";
 import "./../fol/fobll.sol";
 
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
+
 /**
  * @title crypto e-redistribution kindly application implementation of aceka
  * @inheritdoc
  */
 contract CEKA is ACEKA {
+    using SafeMath for uint256;
+
     /// @title contract start time_stamp
     uint256 public tsStart;
     /// @title contract finish time_stamp
@@ -86,6 +90,9 @@ contract CEKA is ACEKA {
 
         // init fobll
         __fobll = new FOBLL(psaCount);
+
+        // emit event
+        emit estart(now, amntInit);
     }
 
     /// @inheritdoc
@@ -107,7 +114,7 @@ contract CEKA is ACEKA {
         // in case get processed breaks single get contract constraint
         require(amnt > 0 && amnt <= amntCurrent, "Invalid get amnt, calculated amount breaks limits get contract constraint");
         // update contract data
-        amntCurrent -= amnt;
+        amntCurrent = amntCurrent.sub(amnt);
         // transfer funds and emit event
         msg.sender.transfer(amnt);
         emit egot(participant.addr, amnt);
@@ -120,22 +127,23 @@ contract CEKA is ACEKA {
         // in case put amount breaks min/max contract constraint
         require(putAmntMin <= msg.value && msg.value <= putAmntMax, "Invalid put value, amount breaks min/max contract constraint");
 
+        uint256 amnt = msg.value;
         // update participant contract data
         Participant memory participant = __get(msg.sender, true);
         // in case put time_stamp breaks min put delta constraint
         require(now - participant.ts > putTsDelta, "Invalid put now, time_stamp breaks min put delta constraint");
         participant.ts = now;
-        participant.amnt += msg.value;
+        participant.amnt = participant.amnt.add(amnt);
         __participants[participant.addr] = participant;
 
         // update contract data
-        amntTotal += msg.value;
-        amntClean += msg.value;
-        amntCurrent += msg.value;
+        amntTotal = amntTotal.add(amnt);
+        amntClean = amntClean.add(amnt);
+        amntCurrent = amntCurrent.add(amnt);
 
         // update fobll and emit event
         __fobll.push(participant.addr, participant.amnt);
-        emit eput(participant.addr, participant.amnt);
+        emit eput(participant.addr, amnt);
     }
 
     /**
@@ -159,18 +167,20 @@ contract CEKA is ACEKA {
         finished = true;
 
         // transfer return to hold funds and update contract data
-        uint256 rthAmnt = amntTotal / rthRate;
-        amntClean -= rthAmnt;
+        uint256 rthAmnt = amntClean.div(rthRate);
+        amntClean = amntClean.sub(rthAmnt);
+        amntCurrent = amntClean;
         rthAddress.transfer(rthAmnt);
 
         // transfer sub succesor funds and update contract data
         uint32 ssIdx = smCount + 1;
-        uint256 ssAmnt = amntClean - (amntClean / ssRate);
+        uint256 ssAmnt = amntClean.sub(amntClean.div(ssRate));
         for (uint32 idx = 1; idx <= ssIdx; idx++) {
-            ssAmnt /= 2;
+            ssAmnt = ssAmnt.div(2);
         }
-        amntClean -= rthAmnt;
-        ssAddress.transfer(rthAmnt);
+        amntClean = amntClean.sub(ssAmnt);
+        amntCurrent = amntClean;
+        ssAddress.transfer(ssAmnt);
 
         // emit event
         emit efinished(now, amntClean);
@@ -192,15 +202,14 @@ contract CEKA is ACEKA {
         }
 
         uint256 amntCalc = 0;
-        uint amntSplit = amntClean / ssRate;
-        uint256 amntBase = amntClean - amntSplit;
+        uint amntSplit = amntClean.div(ssRate);
         if (index <= smCount) {
-            amntCalc = amntBase;
+            amntCalc = amntClean.sub(amntSplit);
             for (uint32 idx = 1; idx <= index; idx++) {
-                amntCalc /= 2;
+                amntCalc = amntCalc.div(2);
             }
         }
-        amntCalc += (amntSplit / smCount);
+        amntCalc = amntCalc.add(amntSplit.div(smCount));
         return amntCalc;
     }
 
