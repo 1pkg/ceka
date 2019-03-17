@@ -19,12 +19,12 @@ contract FOBLL is FOLADT, Ownable {
     }
 
     /// @inheritdoc
-    function size() public view returns(uint32) {
+    function size() external view returns(uint32) {
         return __size;
     }
 
     /// @inheritdoc
-    function capacity() public view returns(uint32) {
+    function capacity() external view returns(uint32) {
         return __capacity;
     }
 
@@ -34,7 +34,7 @@ contract FOBLL is FOLADT, Ownable {
     }
 
     /// @inheritdoc
-    function push(address key, uint256 value) public owner {
+    function push(address key, uint256 value) external owner {
         // in case of invalid address specified
         require(key != address(0), "Invalid key specified");
 
@@ -56,7 +56,7 @@ contract FOBLL is FOLADT, Ownable {
     }
 
     /// @inheritdoc
-    function index(address key) public returns(uint32) {
+    function index(address key) external returns(uint32) {
         // in case of invalid address specified
         require(key != address(0), "Invalid key specified");
 
@@ -112,7 +112,7 @@ contract FOBLL is FOLADT, Ownable {
     }
 
     /// @inheritdoc
-    function clear() public owner {
+    function clear() external owner {
         // clear whole list
         for (uint32 idx = 1; idx < __size; idx++) remove(idx);
         __size = 0;
@@ -120,7 +120,7 @@ contract FOBLL is FOLADT, Ownable {
     }
 
     /// @inheritdoc
-    function slice(uint32 start, uint32 finish) public view returns(address[] memory) {
+    function slice(uint32 start, uint32 finish) external view returns(address[] memory) {
         // in case of invalid indexes specified
         require(start != 0 && finish != 0 && start <= finish && finish <= __size, "Invalid indexes specified");
 

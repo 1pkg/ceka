@@ -1,6 +1,7 @@
 pragma solidity ^0.5;
 
 import "./../interfaces/aceka.sol";
+import "./../interfaces/achart.sol";
 import "./../fol/fobll.sol";
 
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
@@ -9,7 +10,8 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
  * @title crypto e-redistribution kindly application implementation of aceka
  * @inheritdoc
  */
-contract CEKA is ACEKA {
+contract CEKA is ACEKA, AChart {
+    // using SafeMath for calculation
     using SafeMath for uint256;
 
     /// @title contract start time_stamp
@@ -96,7 +98,7 @@ contract CEKA is ACEKA {
     }
 
     /// @inheritdoc
-    function get() public {
+    function get() external {
         // in case get time_stamp breaks expiration contract constraint
         require(__finish(), "Invalid get now, time_stamp breaks expiration contract constraint");
 
@@ -121,7 +123,7 @@ contract CEKA is ACEKA {
     }
 
     /// @inheritdoc
-    function put() public payable {
+    function put() external payable {
         // in case put time_stamp breaks expiration contract constraint
         require(!__finish(), "Invalid put now, time_stamp breaks expiration contract constraint");
         // in case put amount breaks min/max contract constraint
@@ -144,6 +146,13 @@ contract CEKA is ACEKA {
         // update fobll and emit event
         __fobll.push(participant.addr, participant.amnt);
         emit eput(participant.addr, amnt);
+
+        // find index of participant in fobll
+        uint32 idx = __fobll.index(participant.addr);
+        // in case index is sufficient emit event
+        if (idx != 0) {
+            emit eupdate(participant.addr, participant.amnt, idx);
+        }
     }
 
     /// @inheritdoc
@@ -169,6 +178,20 @@ contract CEKA is ACEKA {
         // transfer funds and emit event
         msg.sender.transfer(amnt);
         emit eleave(participant.addr, amnt);
+    }
+
+    /// @inheritdoc
+    function top(uint32 count) external view returns(address[] memory, uint256[] memory) {
+        uint32 size = __fobll.size();
+        // check count constraint and fix it
+        count = count == 0 || count > size ? size : count;
+        // get top slice from fobll
+        address[] memory addrs = __fobll.slice(0, size);
+        uint256[] memory amnts = new uint256[](count);
+        for(uint32 idx = 0; i < size; i++) {
+            amnts[idx] = __get(addrs[i], false).amnt;
+        }
+        return (addrs, amnts);
     }
 
     /**
