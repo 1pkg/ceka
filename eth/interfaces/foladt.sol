@@ -37,7 +37,7 @@ interface FOLADT {
      * @param key element identifier
      * @param value element value
      */
-    function index(address key) external returns(uint32);
+    function index(address key) external view returns(uint32);
 
     /**
      * @title get fol element at specific index, if element not exists return address(0)
