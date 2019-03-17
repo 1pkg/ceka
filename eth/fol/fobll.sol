@@ -56,7 +56,7 @@ contract FOBLL is FOLADT, Ownable {
     }
 
     /// @inheritdoc
-    function index(address key) external returns(uint32) {
+    function index(address key) external view returns(uint32) {
         // in case of invalid address specified
         require(key != address(0), "Invalid key specified");
 

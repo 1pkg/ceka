@@ -244,7 +244,7 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
     }
 
     /// @inheritdoc
-    function _canwipe() internal returns(bool) {
+    function canwipe() public returns(bool) {
         // get all participiants fromfobll
         uint32 size = __fobll.size();
         address[] memory addrs = __fobll.slice(0, __fobll.size());
@@ -257,7 +257,7 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
         }
 
         // call parent implementation
-        return Wiped._canwipe();
+        return Wiped.canwipe();
     }
 
     /**
