@@ -1,4 +1,4 @@
-pragma solidity ^0.5;
+pragma solidity 0.5.6;
 
 /**
  * @title fixed ordered list abstract data type keep limited elements number with specific payload order 
