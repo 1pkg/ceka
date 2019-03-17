@@ -71,7 +71,7 @@ contract CEKA is ACEKA {
         uint32 psmCount,
         uint32 psaCount,
         uint32 pssRate
-    ) public {
+    ) public payable {
         // init ctor params
         tsStart = ptsStart;
         tsFinish = ptsFinish;
@@ -96,7 +96,7 @@ contract CEKA is ACEKA {
     }
 
     /// @inheritdoc
-    function get() public payable {
+    function get() public {
         // in case get time_stamp breaks expiration contract constraint
         require(__finish(), "Invalid get now, time_stamp breaks expiration contract constraint");
 
@@ -146,6 +146,31 @@ contract CEKA is ACEKA {
         emit eput(participant.addr, amnt);
     }
 
+    /// @inheritdoc
+    function leave() external {
+        // in case leave time_stamp breaks expiration contract constraint
+        require(!__finish(), "Invalid leave now, time_stamp breaks expiration contract constraint");
+
+        // update participant contract data
+        Participant memory participant = __get(msg.sender, false);
+        // in case get address breaks known participiant get contract constraint
+        require(participant.addr != address(0), "Invalid leave addr, address breaks known participiant leave contract constraint");
+        // in case get processed breaks single get contract constraint
+        require(!participant.prcsd, "Invalid leave prcsd flag, processed breaks single leave contract constraint");
+        participant.prcsd = true;
+        __participants[participant.addr] = participant;
+
+        // calculate participant amount
+        uint256 amnt = participant.amnt.div(2);
+        // in case get processed breaks single get contract constraint
+        require(amnt > 0 && amnt <= amntCurrent, "Invalid leave amnt, calculated amount breaks limits leave contract constraint");
+        // update contract data
+        amntCurrent = amntCurrent.sub(amnt);
+        // transfer funds and emit event
+        msg.sender.transfer(amnt);
+        emit eleave(participant.addr, amnt);
+    }
+
     /**
      * @title calculate get amount for participiant with addr
      * @param addr address of participant
@@ -170,6 +195,7 @@ contract CEKA is ACEKA {
         uint256 rthAmnt = amntClean.div(rthRate);
         amntClean = amntClean.sub(rthAmnt);
         amntCurrent = amntClean;
+        // transfer funds to hold
         rthAddress.transfer(rthAmnt);
 
         // transfer sub succesor funds and update contract data
@@ -180,10 +206,11 @@ contract CEKA is ACEKA {
         }
         amntClean = amntClean.sub(ssAmnt);
         amntCurrent = amntClean;
+        // transfer funds to sub successor
         ssAddress.transfer(ssAmnt);
 
         // emit event
-        emit efinished(now, amntClean);
+        emit efinished(now, amntInit, amntTotal, amntClean);
 
         // finis is done now
         // contract is swithched in get phase
