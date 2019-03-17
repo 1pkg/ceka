@@ -107,10 +107,15 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
         uint256 amnt = __calc(participant.addr);
         // in case get processed breaks single get contract constraint
         require(amnt > 0 && amnt <= amntCurrent, "Invalid get amnt, calculated amount breaks limits get contract constraint");
+        // transfer funds and emit event
+        // in case of transfer failed
+        if (!msg.sender.transfer(amnt)) {
+            participant.prcsd = false;
+            __participants[participant.addr] = participant;
+            return;
+        }
         // update contract data
         amntCurrent = amntCurrent.sub(amnt);
-        // transfer funds and emit event
-        msg.sender.transfer(amnt);
         emit egot(participant.addr, amnt);
     }
 
@@ -165,10 +170,15 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
         uint256 amnt = participant.amnt.div(2);
         // in case get processed breaks single get contract constraint
         require(amnt > 0 && amnt <= amntCurrent, "Invalid leave amnt, calculated amount breaks limits leave contract constraint");
+        // transfer funds and emit event
+        // in case of transfer failed
+        if (!msg.sender.transfer(amnt)) {
+            participant.prcsd = false;
+            __participants[participant.addr] = participant;
+            return;
+        }
         // update contract data
         amntCurrent = amntCurrent.sub(amnt);
-        // transfer funds and emit event
-        msg.sender.transfer(amnt);
         emit eleave(participant.addr, amnt);
     }
 
@@ -200,12 +210,17 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
            return false;
         }
 
-        // transfer return to hold funds and update contract data
+        // transfer return to hold funds
         uint256 rthAmnt = amntClean.div(rthRate);
+        // transfer funds to hold
+        // in case of transfer failed
+        if (!rthAddress.transfer(rthAmnt)) {
+            _finished = false;
+            return;
+        }
+        // update contract data
         amntClean = amntClean.sub(rthAmnt);
         amntCurrent = amntClean;
-        // transfer funds to hold
-        rthAddress.transfer(rthAmnt);
 
         // transfer sub succesor funds and update contract data
         uint32 ssIdx = smCount + 1;
@@ -213,10 +228,15 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
         for (uint32 idx = 1; idx <= ssIdx; idx++) {
             ssAmnt = ssAmnt.div(2);
         }
+        // transfer funds to sub successor
+        // in case of transfer failed
+        if(!__ssAddress.transfer(ssAmnt)) {
+            _finished = false;
+            return;
+        }
+        // update contract data
         amntClean = amntClean.sub(ssAmnt);
         amntCurrent = amntClean;
-        // transfer funds to sub successor
-        __ssAddress.transfer(ssAmnt);
 
         // finis is done now
         // contract is swithched in get phase
