@@ -1,7 +1,7 @@
 pragma solidity ^0.5;
 
 import "./../interfaces/foladt.sol";
-import "./../interfaces/ownable.sol";
+import "./../helpers/ownable.sol";
 
 /**
  * @title fixed ordered bidirectional linked list implementation of foladt
