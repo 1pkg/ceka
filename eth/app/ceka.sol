@@ -12,8 +12,6 @@ contract CEKA is ACEKA {
     uint256 public tsStart;
     /// @title contract finish time_stamp
     uint256 public tsFinish;
-    // @title contract finished flag
-    bool private finished;
 
     /// @title contract initial amount
     uint256 public amntInit;
@@ -32,17 +30,63 @@ contract CEKA is ACEKA {
     uint256 public putAmntMax;
 
     /// @title contract return to hold rate
-    uint256 public rthRate;
-    /// @title contract return to hold adress
-    address payable public rthAdress;
+    uint32 public rthRate;
+    /// @title contract return to hold address
+    address payable public rthAddress;
 
     /// @title contract successors main count
     uint32 public smCount;
     /// @title contract successors all count
     uint32 public saCount;
+    /// @title contract successors split rate
+    uint32 public ssRate;
 
-    /// @title contract sub successor adress
-    address payable private ssAdress;
+    /**
+     * @title initialize ceka
+     * @param ptsStart max start time_stamp
+     * @param ptsFinish finish time_stamp
+     * @param pputTsDelta put delta time_stamp constraint
+     * @param pputAmntMin put amount min constraint
+     * @param pputAmntMax put amount max constraint
+     * @param prthRate return to hold rate
+     * @param prthAddress return to hold rate
+     * @param pssAddress sub successor adress
+     * @param psmCount successors main count
+     * @param psaCount successors all count
+     * @param pssRate successors split rate
+     */
+    constructor(
+        uint256 ptsStart,
+        uint256 ptsFinish,
+        uint256 pputTsDelta,
+        uint256 pputAmntMin,
+        uint256 pputAmntMax,
+        uint32 prthRate,
+        address payable prthAddress,
+        address payable pssAddress,
+        uint32 psmCount,
+        uint32 psaCount,
+        uint32 pssRate
+    ) public {
+        // init ctor params
+        tsStart = ptsStart;
+        tsFinish = ptsFinish;
+        putTsDelta = pputTsDelta;
+        putAmntMin = pputAmntMin;
+        putAmntMax = pputAmntMax;
+        rthRate = prthRate;
+        rthAddress = prthAddress;
+        ssAddress = pssAddress;
+        psmCount = smCount;
+        psaCount = saCount;
+        pssRate = ssRate;
+
+        // init amounts
+        amntInit = amntTotal = amntClean = amntCurrent = msg.value;
+
+        // init fobll
+        __fobll = new FOBLL(psaCount);
+    }
 
     /// @inheritdoc
     function get() public payable {
@@ -117,16 +161,16 @@ contract CEKA is ACEKA {
         // transfer return to hold funds and update contract data
         uint256 rthAmnt = amntTotal / rthRate;
         amntClean -= rthAmnt;
-        rthAdress.transfer(rthAmnt);
+        rthAddress.transfer(rthAmnt);
 
         // transfer sub succesor funds and update contract data
-        uint256 ssAmnt = amntClean / 2;
         uint32 ssIdx = smCount + 1;
+        uint256 ssAmnt = amntClean - (amntClean / ssRate);
         for (uint32 idx = 1; idx <= ssIdx; idx++) {
             ssAmnt /= 2;
         }
         amntClean -= rthAmnt;
-        ssAdress.transfer(rthAmnt);
+        ssAddress.transfer(rthAmnt);
 
         // emit event
         emit efinished(now, amntClean);
@@ -148,14 +192,15 @@ contract CEKA is ACEKA {
         }
 
         uint256 amntCalc = 0;
-        uint256 amntBase = amntClean / 2;
+        uint amntSplit = amntClean / ssRate;
+        uint256 amntBase = amntClean - amntSplit;
         if (index <= smCount) {
             amntCalc = amntBase;
             for (uint32 idx = 1; idx <= index; idx++) {
                 amntCalc /= 2;
             }
         }
-        amntCalc += (amntBase / smCount);
+        amntCalc += (amntSplit / smCount);
         return amntCalc;
     }
 
@@ -195,4 +240,10 @@ contract CEKA is ACEKA {
 
     // fobll order participiants by amount
     FOBLL private __fobll;
+
+    // contract finished flag
+    bool private finished;
+
+    // contract sub successor adress
+    address payable private ssAddress;
 }
