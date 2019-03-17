@@ -287,27 +287,27 @@ contract FOBLL is FOLADT, Ownable {
         ++__size;
     }
 
-    // size of fobll
+    /// @title size of fobll
     uint32 private __size;
-    // capacity of fobll
+    /// @title capacity of fobll
     uint32 private __capacity;
 
-    // inner node struct of fobll
+    /// @title inner node struct of fobll
     struct Node {
-        // node self value
+        /// @title node self value
         uint256 value;
-        // node self address
+        /// @title node self address
         address self;
-        // node next address
+        /// @title node next address
         address next;
-        // node prev address
+        /// @title node prev address
         address prev;
     }
-    // nodes mapping of fobll
+    /// @title nodes mapping of fobll
     mapping(address => Node) private __nodes;
     
-    // head ptr of fobll
+    /// @title head ptr of fobll
     address private __head;
-    // tail ptr of fobll
+    /// @title tail ptr of fobll
     address private __tail;
 }

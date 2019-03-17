@@ -1,8 +1,6 @@
 pragma solidity ^0.5;
 
-/**
- * @title abstract chart interface
- */
+/// @title abstract chart interface
 interface AChart {
     /**
      * @title return top elemens from the chart

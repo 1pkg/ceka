@@ -2,6 +2,7 @@ pragma solidity ^0.5;
 
 import "./../interfaces/aceka.sol";
 import "./../interfaces/achart.sol";
+import "./../helpers/finite.sol";
 import "./../fol/fobll.sol";
 
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
@@ -10,14 +11,9 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
  * @title crypto e-redistribution kindly application implementation of aceka
  * @inheritdoc
  */
-contract CEKA is ACEKA, AChart {
+contract CEKA is ACEKA, AChart, Finite {
     // using SafeMath for calculation
     using SafeMath for uint256;
-
-    /// @title contract start time_stamp
-    uint256 public tsStart;
-    /// @title contract finish time_stamp
-    uint256 public tsFinish;
 
     /// @title contract initial amount
     uint256 public amntInit;
@@ -73,16 +69,14 @@ contract CEKA is ACEKA, AChart {
         uint32 psmCount,
         uint32 psaCount,
         uint32 pssRate
-    ) public payable {
+    ) public payable Finite(ptsStart, ptsFinish) {
         // init ctor params
-        tsStart = ptsStart;
-        tsFinish = ptsFinish;
         putTsDelta = pputTsDelta;
         putAmntMin = pputAmntMin;
         putAmntMax = pputAmntMax;
         rthRate = prthRate;
         rthAddress = prthAddress;
-        ssAddress = pssAddress;
+        __ssAddress = pssAddress;
         psmCount = smCount;
         psaCount = saCount;
         pssRate = ssRate;
@@ -92,15 +86,12 @@ contract CEKA is ACEKA, AChart {
 
         // init fobll
         __fobll = new FOBLL(psaCount);
-
-        // emit event
-        emit estart(now, amntInit);
     }
 
     /// @inheritdoc
     function get() external {
         // in case get time_stamp breaks expiration contract constraint
-        require(__finish(), "Invalid get now, time_stamp breaks expiration contract constraint");
+        require(finish(), "Invalid get now, time_stamp breaks expiration contract constraint");
 
         // update participant contract data
         Participant memory participant = __get(msg.sender, false);
@@ -125,7 +116,7 @@ contract CEKA is ACEKA, AChart {
     /// @inheritdoc
     function put() external payable {
         // in case put time_stamp breaks expiration contract constraint
-        require(!__finish(), "Invalid put now, time_stamp breaks expiration contract constraint");
+        require(!finish(), "Invalid put now, time_stamp breaks expiration contract constraint");
         // in case put amount breaks min/max contract constraint
         require(putAmntMin <= msg.value && msg.value <= putAmntMax, "Invalid put value, amount breaks min/max contract constraint");
 
@@ -158,7 +149,7 @@ contract CEKA is ACEKA, AChart {
     /// @inheritdoc
     function leave() external {
         // in case leave time_stamp breaks expiration contract constraint
-        require(!__finish(), "Invalid leave now, time_stamp breaks expiration contract constraint");
+        require(!finish(), "Invalid leave now, time_stamp breaks expiration contract constraint");
 
         // update participant contract data
         Participant memory participant = __get(msg.sender, false);
@@ -184,35 +175,28 @@ contract CEKA is ACEKA, AChart {
     function top(uint32 count) external view returns(address[] memory, uint256[] memory) {
         uint32 size = __fobll.size();
         // check count constraint and fix it
-        count = count == 0 || count > size ? size : count;
+        uint32 fcount = count == 0 || count > size ? size : count;
         // get top slice from fobll
-        address[] memory addrs = __fobll.slice(0, size);
-        uint256[] memory amnts = new uint256[](count);
-        for(uint32 idx = 0; i < size; i++) {
-            amnts[idx] = __get(addrs[i], false).amnt;
+        address[] memory addrs = __fobll.slice(0, fcount);
+        uint256[] memory amnts = new uint256[](fcount);
+        for(uint32 idx = 0; idx < fcount; idx++) {
+            amnts[idx] = __get(addrs[idx], false).amnt;
         }
         return (addrs, amnts);
     }
 
-    /**
-     * @title calculate get amount for participiant with addr
-     * @param addr address of participant
-     * @return finished flag
-     */
-    function __finish() private returns(bool) {
+    /// @inheritdoc
+    function finish() public returns(bool) {
         // in case finish has been already processed
         // and contract now in get phase
-        if (finished) {
+        if (_finished) {
             return true;
         }
 
         // in case contract still in put phase
-        if (now < tsFinish) {
+        if (!Finite.finish()) {
            return false;
         }
-
-        // set finished flag
-        finished = true;
 
         // transfer return to hold funds and update contract data
         uint256 rthAmnt = amntClean.div(rthRate);
@@ -230,10 +214,7 @@ contract CEKA is ACEKA, AChart {
         amntClean = amntClean.sub(ssAmnt);
         amntCurrent = amntClean;
         // transfer funds to sub successor
-        ssAddress.transfer(ssAmnt);
-
-        // emit event
-        emit efinished(now, amntInit, amntTotal, amntClean);
+        __ssAddress.transfer(ssAmnt);
 
         // finis is done now
         // contract is swithched in get phase
@@ -266,6 +247,7 @@ contract CEKA is ACEKA, AChart {
     /**
      * @title find existed participant by addr, if no participant were found add empty one
      * @param addr address of participant
+     * @param nonex flag for add empty one
      * @return participiant
      */
     function __get(address addr, bool nonex) private returns(Participant memory) {
@@ -283,26 +265,23 @@ contract CEKA is ACEKA, AChart {
         return participant;
     }
 
-    // participiant related data
+    /// @title participiant related data
     struct Participant {
-        // participiant get address
+        /// @title participiant get address
         address addr;
-        // participiant put amount
+        /// @title participiant put amount
         uint256 amnt;
-        // participiant put time_stamp
+        /// @title participiant put time_stamp
         uint256 ts;
-        // participiant get processed flag
+        /// @title participiant get processed flag
         bool prcsd;
     }
-    // contract participants map
+    /// @title contract participants map
     mapping (address => Participant) private __participants;
 
-    // fobll order participiants by amount
+    /// @title fobll order participiants by amount
     FOBLL private __fobll;
 
-    // contract finished flag
-    bool private finished;
-
-    // contract sub successor adress
-    address payable private ssAddress;
+    /// @title contract sub successor adress
+    address payable private __ssAddress;
 }

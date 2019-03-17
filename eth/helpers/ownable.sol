@@ -1,24 +1,16 @@
 pragma solidity ^0.5;
 
-/**
- * @title ownable contract has an owner address, and provides basic authorization control
- */
+/// @title ownable contract has an owner address, and provides basic authorization control
 contract Ownable {
-    /**
-     * @title current owner address
-     */
+    /// @title current owner address
     address public cowner;
  
-    /**
-     * @title constructor set the owner of the contract to the sender
-     */
+    /// @title initialze owner of the contract to the sender
     constructor() public {
         cowner = msg.sender;
     }
  
-    /**
-     * @title throw if called by any account other than the owner
-     */
+    /// @title check if called by any account other than the owner
     modifier owner() {
         require(msg.sender == cowner, "You're not the owner of this contract");
         _;
