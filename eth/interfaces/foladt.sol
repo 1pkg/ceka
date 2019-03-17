@@ -1,7 +1,8 @@
 pragma solidity ^0.5;
 
 /**
- * @title fixed ordered list abstract data type keep limited elements number each [key element identifier => payload element value] with specific payload order 
+ * @title fixed ordered list abstract data type keep limited elements number with specific payload order 
+ * @dev each elements [key element identifier => payload element value]
  */
 interface FOLADT {
     /**
@@ -17,7 +18,7 @@ interface FOLADT {
     function capacity() external view returns(uint32);
 
     /**
-     * @title check fol for list
+     * @title check fol for emptinesslist
      * @return fol emptinesslist
      */
     function empty() external view returns(bool);
