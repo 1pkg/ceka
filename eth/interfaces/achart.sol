@@ -1,4 +1,4 @@
-pragma solidity ^0.5;
+pragma solidity 0.5.6;
 
 /// @title abstract chart interface
 interface AChart {

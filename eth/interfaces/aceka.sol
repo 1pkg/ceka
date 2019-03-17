@@ -1,4 +1,4 @@
-pragma solidity ^0.5;
+pragma solidity 0.5.6;
 
 /// @title abstract crypto e-redistribution kindly application interface
 interface ACEKA {
@@ -25,7 +25,7 @@ interface ACEKA {
 
     /// @title emit on success put action
     event eput(address addr, uint256 amnt);
-    
+
     /// @title emit on success leave action
     event eleave(address addr, uint256 amnt);
 }

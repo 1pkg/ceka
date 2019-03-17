@@ -1,4 +1,4 @@
-pragma solidity ^0.5;
+pragma solidity 0.5.6;
 
 import "./../interfaces/aceka.sol";
 import "./../interfaces/achart.sol";
