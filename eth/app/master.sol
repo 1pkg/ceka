@@ -24,7 +24,7 @@ contract Master is AFactory, Wiped {
         uint32 size = contracts.lenght;
         for (uint32 idx = 0; idx < size; idx++) {
             // if any contracts wasn't got already
-            if (contracts[idx].canwipe()) {
+            if (contracts[idx].finish()) {
                 return false;
             }
         }

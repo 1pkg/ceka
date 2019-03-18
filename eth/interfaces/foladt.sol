@@ -55,12 +55,6 @@ interface FOLADT {
     function remove(uint32 idx) external;
 
     /**
-     * @title clear fol completly
-     * @dev use carefuly
-     */
-    function clear() external;
-
-    /**
      * @title get fol elements slice between start and finish
      * @dev consider size constraints
      * @param start slice start index

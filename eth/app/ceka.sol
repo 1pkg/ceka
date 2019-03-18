@@ -3,7 +3,6 @@ pragma solidity 0.5.6;
 import "./../interfaces/aceka.sol";
 import "./../interfaces/achart.sol";
 import "./../helpers/finite.sol";
-import "./../helpers/wiped.sol";
 import "./../fol/fobll.sol";
 
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
@@ -12,7 +11,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
  * @title crypto e-redistribution kindly application implementation of aceka
  * @inheritdoc
  */
-contract CEKA is ACEKA, AChart, Finite, Wiped {
+contract CEKA is ACEKA, AChart, Finite {
     // using SafeMath for calculation
     using SafeMath for uint256;
 
@@ -95,13 +94,12 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
         require(finish(), "Invalid get now, time_stamp breaks expiration contract constraint");
 
         // update participant contract data
-        Participant memory participant = __get(msg.sender, false);
+        Participant storage participant = __get(msg.sender, false);
         // in case get address breaks known participiant get contract constraint
         require(participant.addr != address(0), "Invalid get addr, address breaks known participiant get contract constraint");
         // in case get processed breaks single get contract constraint
         require(!participant.prcsd, "Invalid get prcsd flag, processed breaks single get contract constraint");
         participant.prcsd = true;
-        __participants[participant.addr] = participant;
 
         // calculate participant amount
         uint256 amnt = __calc(participant.addr);
@@ -109,9 +107,8 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
         require(amnt > 0 && amnt <= amntCurrent, "Invalid get amnt, calculated amount breaks limits get contract constraint");
         // transfer funds and emit event
         // in case of transfer failed
-        if (!msg.sender.transfer(amnt)) {
+        if (!msg.sender.send(amnt)) {
             participant.prcsd = false;
-            __participants[participant.addr] = participant;
             return;
         }
         // update contract data
@@ -128,12 +125,11 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
 
         uint256 amnt = msg.value;
         // update participant contract data
-        Participant memory participant = __get(msg.sender, true);
+        Participant storage participant = __get(msg.sender, true);
         // in case put time_stamp breaks min put delta constraint
         require(now - participant.ts > putTsDelta, "Invalid put now, time_stamp breaks min put delta constraint");
         participant.ts = now;
         participant.amnt = participant.amnt.add(amnt);
-        __participants[participant.addr] = participant;
 
         // update contract data
         amntTotal = amntTotal.add(amnt);
@@ -158,13 +154,12 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
         require(!finish(), "Invalid leave now, time_stamp breaks expiration contract constraint");
 
         // update participant contract data
-        Participant memory participant = __get(msg.sender, false);
+        Participant storage participant = __get(msg.sender, false);
         // in case get address breaks known participiant get contract constraint
         require(participant.addr != address(0), "Invalid leave addr, address breaks known participiant leave contract constraint");
         // in case get processed breaks single get contract constraint
         require(!participant.prcsd, "Invalid leave prcsd flag, processed breaks single leave contract constraint");
         participant.prcsd = true;
-        __participants[participant.addr] = participant;
 
         // calculate participant amount
         uint256 amnt = participant.amnt.div(2);
@@ -172,9 +167,8 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
         require(amnt > 0 && amnt <= amntCurrent, "Invalid leave amnt, calculated amount breaks limits leave contract constraint");
         // transfer funds and emit event
         // in case of transfer failed
-        if (!msg.sender.transfer(amnt)) {
+        if (!msg.sender.send(amnt)) {
             participant.prcsd = false;
-            __participants[participant.addr] = participant;
             return;
         }
         // update contract data
@@ -214,7 +208,7 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
         uint256 rthAmnt = amntClean.div(rthRate);
         // transfer funds to hold
         // in case of transfer failed
-        if (!rthAddress.transfer(rthAmnt)) {
+        if (!rthAddress.send(rthAmnt)) {
             _finished = false;
             return;
         }
@@ -230,7 +224,7 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
         }
         // transfer funds to sub successor
         // in case of transfer failed
-        if(!__ssAddress.transfer(ssAmnt)) {
+        if(!__ssAddress.send(ssAmnt)) {
             _finished = false;
             return;
         }
@@ -241,23 +235,6 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
         // finis is done now
         // contract is swithched in get phase
         return true;
-    }
-
-    /// @inheritdoc
-    function canwipe() public returns(bool) {
-        // get all participiants fromfobll
-        uint32 size = __fobll.size();
-        address[] memory addrs = __fobll.slice(0, __fobll.size());
-        for (uint32 idx = 0; idx < size; idx++) {
-            // if any participiant wasn't got already 
-            Participant memory participant = __get(msg.sender, false);
-            if (participant.addr != address(0) && !participant.prcsd) {
-                return false;
-            }
-        }
-
-        // call parent implementation
-        return Wiped.canwipe();
     }
 
     /**
@@ -289,8 +266,8 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
      * @param nonex flag for add empty one
      * @return participiant
      */
-    function __get(address addr, bool nonex) private returns(Participant memory) {
-        Participant memory participant = __participants[addr];
+    function __get(address addr, bool nonex) private returns(Participant storage) {
+        Participant storage participant = __participants[addr];
         // in case participant not found
         if (nonex && participant.addr == address(0)) {
             // new participant hasn't done any action yet and have zero amount
@@ -300,6 +277,7 @@ contract CEKA is ACEKA, AChart, Finite, Wiped {
                 ts: 0,
                 prcsd: false
             });
+            __participants[addr] = participant;
         }
         return participant;
     }
