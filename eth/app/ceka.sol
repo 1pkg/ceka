@@ -42,6 +42,8 @@ contract CEKA is ACEKA, AChart, Finite {
     uint32 public saCount;
     /// @title contract successors split rate
     uint32 public ssRate;
+    /// @title contract sub successor adress
+    address payable public ssAddress;
 
     /**
      * @title initialize ceka
@@ -79,7 +81,7 @@ contract CEKA is ACEKA, AChart, Finite {
         pssRate = ssRate;
 
         rthAddress = msg.sender;
-        __ssAddress = pssAddress;
+        ssAddress = pssAddress;
 
         // init amounts
         amntInit = amntTotal = amntClean = amntCurrent = msg.value;
@@ -224,7 +226,7 @@ contract CEKA is ACEKA, AChart, Finite {
         }
         // transfer funds to sub successor
         // in case of transfer failed
-        if(!__ssAddress.send(ssAmnt)) {
+        if(!ssAddress.send(ssAmnt)) {
             _finished = false;
             return;
         }
@@ -298,7 +300,4 @@ contract CEKA is ACEKA, AChart, Finite {
 
     /// @title fobll order participiants by amount
     FOBLL private __fobll;
-
-    /// @title contract sub successor adress
-    address payable private __ssAddress;
 }
