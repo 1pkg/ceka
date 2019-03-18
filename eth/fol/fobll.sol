@@ -112,14 +112,6 @@ contract FOBLL is FOLADT, Ownable {
     }
 
     /// @inheritdoc
-    function clear() external owner {
-        // clear whole list
-        for (uint32 idx = 1; idx < __size; idx++) remove(idx);
-        __size = 0;
-        __head = __tail = address(0);
-    }
-
-    /// @inheritdoc
     function slice(uint32 start, uint32 finish) external view returns(address[] memory) {
         // in case of invalid indexes specified
         require(start != 0 && finish != 0 && start <= finish && finish <= __size, "Invalid indexes specified");
