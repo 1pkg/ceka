@@ -1,0 +1,11 @@
+{
+    "name": "ceka",
+    "version": "0.0.1",
+    "dependencies": {},
+    "devDependencies": {
+        "openzeppelin-solidity": "^2.2.0",
+        "solc": "^0.5.7",
+        "solidity": "0.0.1"
+    },
+    "license": "MIT"
+}

@@ -1,4 +1,4 @@
-pragma solidity 0.5.6;
+pragma solidity 0.5.7;
 
 /// @title abstract crypto e-redistribution kindly application interface
 interface ACEKA {
