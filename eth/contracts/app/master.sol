@@ -10,31 +10,31 @@ import "./ceka.sol";
  */
 contract Master is IFactory, Wiped {
     /// @title tracked contracts list
-    mapping (bytes4 => ICEKA[]) public contracts;
+    mapping (string => ICEKA[]) public contracts;
 
     /// @title name preset
-    bytes4 constant NAME_SU = 's_u'; // 1. small ususal
+    string constant NAME_SU = 's_u'; // 1. small ususal
     /// @title name preset
-    bytes4 constant NAME_SE = 's_e'; // 2. small extra
+    string constant NAME_SE = 's_e'; // 2. small extra
     /// @title name preset
-    bytes4 constant NAME_NS = 'n_s'; // 3. normal small
+    string constant NAME_NS = 'n_s'; // 3. normal small
     /// @title name preset
-    bytes4 constant NAME_NU = 'n_u'; // 4. normal ususal
+    string constant NAME_NU = 'n_u'; // 4. normal ususal
     /// @title name preset
-    bytes4 constant NAME_NC = 'n_c'; // 5. normal common
+    string constant NAME_NC = 'n_c'; // 5. normal common
     /// @title name preset
-    bytes4 constant NAME_NL = 'n_l'; // 6. normal large
+    string constant NAME_NL = 'n_l'; // 6. normal large
     /// @title name preset
-    bytes4 constant NAME_NE = 'n_e'; // 7. normal extra
+    string constant NAME_NE = 'n_e'; // 7. normal extra
     /// @title name preset
-    bytes4 constant NAME_LN = 'l_n'; // 8. large normal
+    string constant NAME_LN = 'l_n'; // 8. large normal
     /// @title name preset
-    bytes4 constant NAME_LU = 'l_u'; // 9. large ususal
+    string constant NAME_LU = 'l_u'; // 9. large ususal
     /// @title name preset
-    bytes4 constant NAME_LE = 'l_i'; // 10. large extra
+    string constant NAME_LE = 'l_i'; // 10. large extra
 
     /// @title presets collection
-    bytes4[10] public presets = [
+    string[10] public presets = [
         NAME_SU,
         NAME_SE,
         NAME_NS,
@@ -48,14 +48,14 @@ contract Master is IFactory, Wiped {
     ];
     
      /// inheritdoc
-    function create(bytes4 name) external owner returns(ICEKA) {
+    function create(string calldata name) external owner returns(ICEKA) {
         ICEKA instance = __create(name);
         contracts[name].push(instance);
         return instance;
     }
 
     /// inheritdoc
-    function get(bytes4 name, bool active) external owner returns(ICEKA[] memory) {
+    function get(string calldata name, bool active) external owner returns(ICEKA[] memory) {
         ICEKA[] memory pcontracts = contracts[name];
         ICEKA[] memory result = new ICEKA[](pcontracts.length);
         for (uint32 pidx = 0; pidx < pcontracts.length; pidx++) {
@@ -91,8 +91,8 @@ contract Master is IFactory, Wiped {
      * @param name name preset
      * @return ackea instance
      */
-    function __create(bytes4 name) private returns(ICEKA) {
-        if (name == NAME_SU) {
+    function __create(string memory name) private returns(ICEKA) {
+        if (__eq(name, NAME_SU)) {
             return new CEKA(
                 now, // from now
                 now + 50 hours, // 50 hours
@@ -105,7 +105,7 @@ contract Master is IFactory, Wiped {
                 4, // ssr 75% / 25%
                 cowner // ss address
             );
-        } else if (name == NAME_SE) {
+        } else if (__eq(name, NAME_SE)) {
             return new CEKA(
                 now, // from now
                 now + 25 hours, // 25 hours
@@ -118,7 +118,7 @@ contract Master is IFactory, Wiped {
                 4, // ssr 75% / 25%
                 cowner // ss address
             );
-        } else if (name == NAME_NS) {
+        } else if (__eq(name, NAME_NS)) {
             return new CEKA(
                 now, // from now
                 now + 100 hours, // 100 hours
@@ -131,7 +131,7 @@ contract Master is IFactory, Wiped {
                 4, // ssr 75% / 25%
                 cowner // ss address
             );
-        } else if (name == NAME_NU) {
+        } else if (__eq(name, NAME_NU)) {
             return new CEKA(
                 now, // from now
                 now + 100 hours, // 100 hours
@@ -144,7 +144,7 @@ contract Master is IFactory, Wiped {
                 4, // ssr 75% / 25%
                 cowner // ss address
             );
-        } else if (name == NAME_NC) {
+        } else if (__eq(name, NAME_NC)) {
             return new CEKA(
                 now, // from now
                 now + 100 hours, // 100 hours
@@ -157,7 +157,7 @@ contract Master is IFactory, Wiped {
                 2,  // ssr 50% / 50%
                 cowner // ss address
             );
-        } else if (name == NAME_NL) {
+        } else if (__eq(name, NAME_NL)) {
             return new CEKA(
                 now, // from now
                 now + 500 hours, // 500 hours
@@ -170,7 +170,7 @@ contract Master is IFactory, Wiped {
                 2,  // ssr 50% / 50%
                 cowner // ss address
             );
-        } else if (name == NAME_NE) {
+        } else if (__eq(name, NAME_NE)) {
             return new CEKA(
                 now, // from now
                 now + 500 hours, // 500 hours
@@ -183,7 +183,7 @@ contract Master is IFactory, Wiped {
                 4, // ssr 75% / 25%
                 cowner // ss address
             );
-        } else if (name == NAME_LN) {
+        } else if (__eq(name, NAME_LN)) {
             return new CEKA(
                 now, // from now
                 now + 1000 hours, // 1000 hours
@@ -196,7 +196,7 @@ contract Master is IFactory, Wiped {
                 4, // ssr 75% / 25%
                 cowner // ss address
             );
-        } else if (name == NAME_LU) {
+        } else if (__eq(name, NAME_LU)) {
             return new CEKA(
                 now, // from now
                 now + 1000 hours, // 1000 hours
@@ -209,7 +209,7 @@ contract Master is IFactory, Wiped {
                 2,  // ssr 50% / 50%
                 cowner // ss address
             );
-        } else if (name == NAME_LE) {
+        } else if (__eq(name, NAME_LE)) {
             return new CEKA(
                 now, // from now
                 now + 5000 hours, // 5000 hours
@@ -226,4 +226,14 @@ contract Master is IFactory, Wiped {
             require(false, "Invalid name preset specified");
         }
     }
+
+    /**
+     * @dev compare two string for equality
+     * @param first string
+     * @param second string
+     * @return bool
+     */
+    function __eq(string memory first, string memory second) public pure returns (bool) {
+       return keccak256(abi.encodePacked((first))) == keccak256(abi.encodePacked((second)));
+   }
 }
