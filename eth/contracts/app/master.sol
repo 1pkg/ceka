@@ -6,7 +6,7 @@ import "./ceka.sol";
 
 /**
  * @title master contract of whole app controls contract creation
- * @inheritdoc
+ * inheritdoc
  */
 contract Master is IFactory, Wiped {
     /// @title tracked contracts list
@@ -47,14 +47,14 @@ contract Master is IFactory, Wiped {
         NAME_LE
     ];
     
-     /// @inheritdoc
+     /// inheritdoc
     function create(bytes4 name) external owner returns(ICEKA) {
         ICEKA instance = __create(name);
         contracts[name].push(instance);
         return instance;
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function get(bytes4 name, bool active) external owner returns(ICEKA[] memory) {
         ICEKA[] memory pcontracts = contracts[name];
         ICEKA[] memory result = new ICEKA[](pcontracts.length);
@@ -69,7 +69,7 @@ contract Master is IFactory, Wiped {
         return result;
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function canwipe() public returns(bool) {
         for (uint32 idx = 0; idx < presets.length; idx++) {
             ICEKA[] memory pcontracts = contracts[presets[idx]];
@@ -87,11 +87,11 @@ contract Master is IFactory, Wiped {
     }
 
     /**
-     * @title create ceka instance depends on name preset
+     * @dev create ceka instance depends on name preset
      * @param name name preset
      * @return ackea instance
      */
-    function __create(bytes4 name) private view returns(ICEKA) {
+    function __create(bytes4 name) private returns(ICEKA) {
         if (name == NAME_SU) {
             return new CEKA(
                 now, // from now

@@ -7,33 +7,33 @@ import "./../helpers/ownable.sol";
  * @title fixed ordered bidirectional linked list concrete implementation of ifoladt
  * @dev all fobll operation O(1) [note max iterations count eq capacity]
  * @dev note all indexations start from 1
- * @inheritdoc
+ * inheritdoc
  */
 contract FOBLL is IFOLADT, Ownable {
     /**
-     * @title initialize fobll with max size param
+     * @dev initialize fobll with max size param
      * @param capacity max size of fobll
      */
     constructor(uint32 capacity) public {
         __capacity = capacity;
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function size() external view returns(uint32) {
         return __size;
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function capacity() external view returns(uint32) {
         return __capacity;
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function empty() public view returns(bool) {
         return __head == address(0) && __tail == address(0) && __size == 0;
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function push(address key, uint256 value) external owner {
         // in case of invalid address specified
         require(key != address(0), "Invalid key specified");
@@ -55,7 +55,7 @@ contract FOBLL is IFOLADT, Ownable {
         __place(key, value);
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function index(address key) external view returns(uint32) {
         // in case of invalid address specified
         require(key != address(0), "Invalid key specified");
@@ -80,7 +80,7 @@ contract FOBLL is IFOLADT, Ownable {
         return 0;
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function at(uint32 idx) public view returns(address) {
         // in case of invalid index specified
         require(idx != 0 && idx <= __size, "Invalid index specified");
@@ -105,13 +105,13 @@ contract FOBLL is IFOLADT, Ownable {
         return address(0);
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function remove(uint32 idx) public owner {
         // use remove by key and at methods
         __remove(at(idx));
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function slice(uint32 start, uint32 finish) external view returns(address[] memory) {
         // in case of invalid indexes specified
         require(start != 0 && finish != 0 && start <= finish && finish <= __size, "Invalid indexes specified");
@@ -138,7 +138,7 @@ contract FOBLL is IFOLADT, Ownable {
     }
 
     /**
-     * @title remove element from fobll by key, if elemnt already exists
+     * @dev remove element from fobll by key, if elemnt already exists
      * @dev update size constraints
      * @param key element identifier
      */
@@ -180,7 +180,7 @@ contract FOBLL is IFOLADT, Ownable {
     }
 
     /**
-     * @title place node into the fobll by order, correctly processed single item fobll and multi items fobll
+     * @dev place node into the fobll by order, correctly processed single item fobll and multi items fobll
      * @param key adress of new node
      * @param value value of new node
      */
@@ -236,7 +236,7 @@ contract FOBLL is IFOLADT, Ownable {
     }
 
     /**
-     * @title create new node with address and value between prev address and next address
+     * @dev create new node with address and value between prev address and next address
      * @param key adress of new node
      * @param value value of new node
      * @param prev ptr to prev node
