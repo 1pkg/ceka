@@ -9,7 +9,7 @@ interface IFactory {
      * @param name name of preset
      * @return ickea instance
      */
-    function create(bytes32 name) external returns(ICEKA);
+    function create(string calldata name) external returns(ICEKA);
 
     /**
      * @dev return ceka instances created before
@@ -17,5 +17,5 @@ interface IFactory {
      * @param active collect only anctive contracts
      * @return ickea[] instances
      */
-    function get(bytes4 name, bool active) external returns(ICEKA[] memory);
+    function get(string calldata name, bool active) external returns(ICEKA[] memory);
 }
