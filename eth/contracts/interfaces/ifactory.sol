@@ -5,15 +5,16 @@ import "./iceka.sol";
 /// @title abstract factory interface
 interface IFactory {
     /**
-     * @title create ceka instance depends on name preset
+     * @dev create ceka instance depends on name preset
      * @param name name of preset
      * @return ickea instance
      */
     function create(bytes32 name) external returns(ICEKA);
 
     /**
+     * @dev return ceka instances created before
      * @param name name of preset
-     * @param bool collect only anctive contracts
+     * @param active collect only anctive contracts
      * @return ickea[] instances
      */
     function get(bytes4 name, bool active) external returns(ICEKA[] memory);

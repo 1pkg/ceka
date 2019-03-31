@@ -9,7 +9,7 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
  * @title crypto e-redistribution kindly application implementation of iceka
- * @inheritdoc
+ * inheritdoc
  */
 contract CEKA is ICEKA, IChart, Finite {
     // using SafeMath for calculation
@@ -46,7 +46,7 @@ contract CEKA is ICEKA, IChart, Finite {
     address payable public ssAddress;
 
     /**
-     * @title initialize ceka
+     * @dev initialize ceka
      * @param ptsStart max start time_stamp
      * @param ptsFinish finish time_stamp
      * @param pputTsDelta put delta time_stamp constraint
@@ -89,7 +89,7 @@ contract CEKA is ICEKA, IChart, Finite {
         __fobll = new FOBLL(psaCount);
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function get() external {
         // in case get time_stamp breaks expiration contract constraint
         require(finish(), "Invalid get now, time_stamp breaks expiration contract constraint");
@@ -117,7 +117,7 @@ contract CEKA is ICEKA, IChart, Finite {
         emit egot(participant.addr, amnt);
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function put() external payable {
         // in case put time_stamp breaks expiration contract constraint
         require(!finish(), "Invalid put now, time_stamp breaks expiration contract constraint");
@@ -149,7 +149,7 @@ contract CEKA is ICEKA, IChart, Finite {
         }
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function leave() external {
         // in case leave time_stamp breaks expiration contract constraint
         require(!finish(), "Invalid leave now, time_stamp breaks expiration contract constraint");
@@ -177,8 +177,8 @@ contract CEKA is ICEKA, IChart, Finite {
         emit eleave(participant.addr, amnt);
     }
 
-    /// @inheritdoc
-    function top(uint32 count) external view returns(address[] memory, uint256[] memory) {
+    /// inheritdoc
+    function top(uint32 count) external returns(address[] memory, uint256[] memory) {
         // check count constraint and fix it
         uint32 size = __fobll.size();
         uint32 fcount = count == 0 || count > size ? size : count;
@@ -191,7 +191,7 @@ contract CEKA is ICEKA, IChart, Finite {
         return (addrs, amnts);
     }
 
-    /// @inheritdoc
+    /// inheritdoc
     function finish() public returns(bool) {
         // in case finish has been already processed
         // and contract now in get phase
@@ -239,11 +239,11 @@ contract CEKA is ICEKA, IChart, Finite {
     }
 
     /**
-     * @title calculate get amount for participiant with addr
+     * @dev calculate get amount for participiant with addr
      * @param addr address of participant
      * @return amount
      */
-    function __calc(address addr) private returns(uint256) {
+    function __calc(address addr) private view returns(uint256) {
         uint32 index = __fobll.index(addr);
         if (index == 0) {
             return 0;
@@ -262,7 +262,7 @@ contract CEKA is ICEKA, IChart, Finite {
     }
 
     /**
-     * @title find existed participant by addr, if no participant were found add empty one
+     * @dev find existed participant by addr, if no participant were found add empty one
      * @param addr address of participant
      * @param nonex flag for add empty one
      * @return participiant

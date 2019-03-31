@@ -4,14 +4,19 @@ import "./ownable.sol";
 
 /// @title contract that can be wiped out by owner
 contract Wiped is Ownable {
-    /// @title transfer all funds to the owner and wipe out the contract
+    /// @dev emit on contract start
+    event ewipe(uint256 ts);
+
+    /// @dev transfer all funds to the owner and wipe out the contract
     function wipe() public owner {
         require(canwipe(), "Invalid canwipe breaks"); 
         selfdestruct(cowner);
+        emit ewipe(now);
     }
 
-    /// @title check that contract can be wiped out
+    /// @dev check that contract can be wiped out
     function canwipe() public returns(bool) {
+        cowner = cowner; // to shut up warn
         // can be wiped out anyway
         return true;
     }

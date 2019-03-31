@@ -5,7 +5,7 @@
     "devDependencies": {
         "openzeppelin-solidity": "^2.2.0",
         "solc": "^0.5.7",
-        "solidity": "0.0.1"
+        "truffle": "^5.0.10"
     },
     "license": "MIT"
 }
