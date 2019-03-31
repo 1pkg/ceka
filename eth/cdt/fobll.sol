@@ -1,15 +1,15 @@
 pragma solidity 0.5.7;
 
-import "./../interfaces/foladt.sol";
+import "./../interfaces/ifoladt.sol";
 import "./../helpers/ownable.sol";
 
 /**
- * @title fixed ordered bidirectional linked list implementation of foladt
+ * @title fixed ordered bidirectional linked list concrete implementation of ifoladt
  * @dev all fobll operation O(1) [note max iterations count eq capacity]
  * @dev note all indexations start from 1
  * @inheritdoc
  */
-contract FOBLL is FOLADT, Ownable {
+contract FOBLL is IFOLADT, Ownable {
     /**
      * @title initialize fobll with max size param
      * @param capacity max size of fobll

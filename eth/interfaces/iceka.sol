@@ -1,7 +1,7 @@
 pragma solidity 0.5.7;
 
 /// @title abstract crypto e-redistribution kindly application interface
-interface ACEKA {
+interface ICEKA {
     /**
      * @title put obtained amount to participiant accordingly with contract constraints
      * @dev may emit egot
@@ -20,6 +20,12 @@ interface ACEKA {
      */
     function leave() external;
 
+    /**
+     * @title check that contract exceed
+     * @return finished flag
+     */
+    function finish() external returns(bool);
+
     /// @title emit on success get action
     event egot(address addr, uint256 amnt);
 
@@ -28,4 +34,7 @@ interface ACEKA {
 
     /// @title emit on success leave action
     event eleave(address addr, uint256 amnt);
+
+    /// @title emit on constract finish
+    event efinished(uint256 tsFinish);
 }
