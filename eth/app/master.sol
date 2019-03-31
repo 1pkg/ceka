@@ -1,6 +1,6 @@
 pragma solidity 0.5.7;
 
-import "./../interfaces/afactory.sol";
+import "./../interfaces/ifactory.sol";
 import "./../helpers/wiped.sol";
 import "./ceka.sol";
 
@@ -8,24 +8,77 @@ import "./ceka.sol";
  * @title master contract of whole app controls contract creation
  * @inheritdoc
  */
-contract Master is AFactory, Wiped {
-    /// @title created tracked contract list
-    CEKA[] public contracts;
+contract Master is IFactory, Wiped {
+    /// @title tracked contracts list
+    mapping (bytes4 => ICEKA[]) public contracts;
 
+    /// @title name preset
+    bytes4 constant NAME_SU = 's_u'; // 1. small ususal
+    /// @title name preset
+    bytes4 constant NAME_SE = 's_e'; // 2. small extra
+    /// @title name preset
+    bytes4 constant NAME_NS = 'n_s'; // 3. normal small
+    /// @title name preset
+    bytes4 constant NAME_NU = 'n_u'; // 4. normal ususal
+    /// @title name preset
+    bytes4 constant NAME_NC = 'n_c'; // 5. normal common
+    /// @title name preset
+    bytes4 constant NAME_NL = 'n_l'; // 6. normal large
+    /// @title name preset
+    bytes4 constant NAME_NE = 'n_e'; // 7. normal extra
+    /// @title name preset
+    bytes4 constant NAME_LN = 'l_n'; // 8. large normal
+    /// @title name preset
+    bytes4 constant NAME_LU = 'l_u'; // 9. large ususal
+    /// @title name preset
+    bytes4 constant NAME_LE = 'l_i'; // 10. large extra
+
+    /// @title presets collection
+    bytes4[10] public presets = [
+        NAME_SU,
+        NAME_SE,
+        NAME_NS,
+        NAME_NU,
+        NAME_NC,
+        NAME_NL,
+        NAME_NE,
+        NAME_LN,
+        NAME_LU,
+        NAME_LE
+    ];
+    
      /// @inheritdoc
-    function create(bytes32 name) external owner returns(ACEKA) {
-        ACEKA instance = __create(name);
-        contracts.push(instance);
+    function create(bytes4 name) external owner returns(ICEKA) {
+        ICEKA instance = __create(name);
+        contracts[name].push(instance);
         return instance;
     }
 
     /// @inheritdoc
-    function canwipe() public returns(bool) {
-        uint32 size = contracts.lenght;
-        for (uint32 idx = 0; idx < size; idx++) {
+    function get(bytes4 name, bool active) external owner returns(ICEKA[] memory) {
+        ICEKA[] memory pcontracts = contracts[name];
+        ICEKA[] memory result = new ICEKA[](pcontracts.length);
+        for (uint32 pidx = 0; pidx < pcontracts.length; pidx++) {
+            ICEKA pcontract = pcontracts[pidx];
             // if any contracts wasn't got already
-            if (contracts[idx].finish()) {
-                return false;
+            if (active && pcontract.finish()) {
+                continue;
+            }
+            result[pidx] = pcontract;
+        }
+        return result;
+    }
+
+    /// @inheritdoc
+    function canwipe() public returns(bool) {
+        for (uint32 idx = 0; idx < presets.length; idx++) {
+            ICEKA[] memory pcontracts = contracts[presets[idx]];
+             for (uint32 pidx = 0; pidx < pcontracts.length; pidx++) {
+                ICEKA pcontract = pcontracts[pidx];
+                // if any contracts wasn't got already
+                if (pcontract.finish()) {
+                    return false;
+                }
             }
         }
 
@@ -38,136 +91,136 @@ contract Master is AFactory, Wiped {
      * @param name name preset
      * @return ackea instance
      */
-    function __create(bytes4 name) private view returns(ACEKA) {
-        if (name == "s_u") { // 1
-            return CEKA(
-                now,
-                now + 1800_00, // 50 hours
-                360, // 0.1 hours
-                10_000_000_000_000, // 0.00001 eth
-                1_000_000_000_000_000_000, // 1 eth
-                4, // 25 %
-                5,
-                25,
-                4, // 75 % / 25 %
-                cowner
+    function __create(bytes4 name) private view returns(ICEKA) {
+        if (name == NAME_SU) {
+            return new CEKA(
+                now, // from now
+                now + 50 hours, // 50 hours
+                6 minutes, // 0.1 hours
+                10 szabo, // 0.00001 eth
+                1 ether, // 1 eth
+                4, // rth 25%
+                5, // main successors
+                25, // all successors
+                4, // ssr 75% / 25%
+                cowner // ss address
             );
-        } else if (name == "s_e") { // 2
-            return CEKA(
-                now,
-                now + 900_00, // 25 hours
-                360, // 0.1 hours
-                10_000_000_000_000, // 0.00001 eth
-                1_000_000_000_000_000_000, // 1 eth
-                4, // 25 %
-                5,
-                25,
-                4, // 75 % / 25 %
-                cowner
+        } else if (name == NAME_SE) {
+            return new CEKA(
+                now, // from now
+                now + 25 hours, // 25 hours
+                6 minutes, // 0.1 hours
+                10 szabo, // 0.00001 eth
+                1 ether, // 1 eth
+                4, // rth 25%
+                5, // main successors
+                25, // all successors
+                4, // ssr 75% / 25%
+                cowner // ss address
             );
-        } else if (name == "n_s") { // 3
-            return CEKA(
-                now,
-                now + 3600_00, // 100 hours
-                360, // 0.1 hours
-                100_000_000_000_000, // 0.0001 eth
-                10_000_000_000_000_000_000, // 10 eth
-                4, // 25 %
-                5,
-                25,
-                4, // 75 % / 25 %
-                cowner
+        } else if (name == NAME_NS) {
+            return new CEKA(
+                now, // from now
+                now + 100 hours, // 100 hours
+                6 minutes, // 0.1 hours
+                100 szabo, // 0.0001 eth
+                10 ether, // 10 eth
+                4, // rth 25%
+                5, // main successors
+                25, // all successors
+                4, // ssr 75% / 25%
+                cowner // ss address
             );
-        } else if (name == "n_u") { // 4
-            return CEKA(
-                now,
-                now + 3600_00, // 100 hours
-                360, // 0.1 hours
-                100_000_000_000_000, // 0.0001 eth
-                10_000_000_000_000_000_000, // 10 eth
-                10, // 10 %
-                10,
-                100,
-                4, // 75 % / 25 %
-                cowner
+        } else if (name == NAME_NU) {
+            return new CEKA(
+                now, // from now
+                now + 100 hours, // 100 hours
+                6 minutes, // 0.1 hours
+                100 szabo, // 0.0001 eth
+                10 ether, // 10 eth
+                4, // rth 25%
+                10, // main successors
+                100, // all successors
+                4, // ssr 75% / 25%
+                cowner // ss address
             );
-        } else if (name == "n_n") { // 5
-            return CEKA(
-                now,
-                now + 3600_00, // 100 hours
-                360, // 0.1 hours
-                100_000_000_000_000, // 0.0001 eth
-                10_000_000_000_000_000_000, // 10 eth
-                10, // 10 %
-                10,
-                100,
-                2,  // 50 % / 50 %
-                cowner
+        } else if (name == NAME_NC) {
+            return new CEKA(
+                now, // from now
+                now + 100 hours, // 100 hours
+                6 minutes, // 0.1 hours
+                100 szabo, // 0.0001 eth
+                10 ether, // 10 eth
+                10, // rth 10%
+                10, // main successors
+                100, // all successors
+                2,  // ssr 50% / 50%
+                cowner // ss address
             );
-        } else if (name == "n_l") { // 6
-            return CEKA(
-                now,
-                now + 18000_00, // 500 hours
-                360, // 0.1 hours
-                100_000_000_000_000, // 0.0001 eth
-                10_000_000_000_000_000_000, // 10 eth
-                10, // 10 %
-                10,
-                100,
-                2,  // 50 % / 50 %
-                cowner
+        } else if (name == NAME_NL) {
+            return new CEKA(
+                now, // from now
+                now + 500 hours, // 500 hours
+                6 minutes, // 0.1 hours
+                100 szabo, // 0.0001 eth
+                10 ether, // 10 eth
+                10, // rth 10%
+                10, // main successors
+                100, // all successors
+                2,  // ssr 50% / 50%
+                cowner // ss address
             );
-        } else if (name == "n_e") { // 7
-            return CEKA(
-                now,
-                now + 18000_00, // 500 hours
-                360, // 0.1 hours
-                100_000_000_000_000, // 0.0001 eth
-                10_000_000_000_000_000_000, // 10 eth
-                4, // 25 %
-                25,
-                250,
-                4, // 75 % / 25 %
-                cowner
+        } else if (name == NAME_NE) {
+            return new CEKA(
+                now, // from now
+                now + 500 hours, // 500 hours
+                6 minutes, // 0.1 hours
+                100 szabo, // 0.0001 eth
+                10 ether, // 10 eth
+                4, // rth 25%
+                25, // main successors
+                250, // all successors
+                4, // ssr 75% / 25%
+                cowner // ss address
             );
-        } else if (name == "l_n") { // 8
-            return CEKA(
-                now,
-                now + 36000_00, // 1000 hours
-                3600, // 1 hours
-                1_000_000_000_000_000, // 0.001 eth
-                100_000_000_000_000_000_000, // 100 eth
-                4, // 25 %
-                25,
-                250,
-                4, // 75 % / 25 %
-                cowner
+        } else if (name == NAME_LN) {
+            return new CEKA(
+                now, // from now
+                now + 1000 hours, // 1000 hours
+                1 hours, // 1 hours
+                1 finney, // 0.001 eth
+                100 ether, // 100 eth
+                4, // rth 25%
+                25, // main successors
+                250, // all successors
+                4, // ssr 75% / 25%
+                cowner // ss address
             );
-        } else if (name == "l_s") { // 9
-            return CEKA(
-                now,
-                now + 36000_00, // 1000 hours
-                3600, // 1 hours
-                1_000_000_000_000_000, // 0.001 eth
-                100_000_000_000_000_000_000, // 100 eth
-                10, // 10 %
-                10,
-                100,
-                2,  // 50 % / 50 %
-                cowner
+        } else if (name == NAME_LU) {
+            return new CEKA(
+                now, // from now
+                now + 1000 hours, // 1000 hours
+                1 hours, // 1 hours
+                1 finney, // 0.001 eth
+                100 ether, // 100 eth
+                10, // rth 10%
+                10, // main successors
+                100, // all successors
+                2,  // ssr 50% / 50%
+                cowner // ss address
             );
-        } else if (name == "l_i") { // 10
-            return CEKA(
-                now,
-                now + 180000_00, // 5000 hours
-                3600, // 1 hours
-                1_000_000_000_000_000, // 0.001 eth
-                100_000_000_000_000_000_000, // 100 eth
-                20, // 5 %
-                50,
-                500,
-                8, // 87.5 % / 12.5 %
-                cowner
+        } else if (name == NAME_LE) {
+            return new CEKA(
+                now, // from now
+                now + 5000 hours, // 5000 hours
+                1 hours, // 1 hours
+                1 finney, // 0.001 eth
+                100 ether, // 100 eth
+                20, // rth 5%
+                50, // main successors
+                500, // all successors
+                8, // ssr 87.5% / 12.5%
+                cowner // ss address
             );
         } else {
             require(false, "Invalid name preset specified");

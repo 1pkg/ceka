@@ -1,7 +1,7 @@
 pragma solidity 0.5.7;
 
 /// @title abstract chart interface
-interface AChart {
+interface IChart {
     /**
      * @title return top elemens from the chart
      * @param count max elements to return

@@ -1,17 +1,17 @@
 pragma solidity 0.5.7;
 
-import "./../interfaces/aceka.sol";
-import "./../interfaces/achart.sol";
+import "./../interfaces/iceka.sol";
+import "./../interfaces/ichart.sol";
 import "./../helpers/finite.sol";
-import "./../fol/fobll.sol";
+import "./../cdt/fobll.sol";
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
- * @title crypto e-redistribution kindly application implementation of aceka
+ * @title crypto e-redistribution kindly application implementation of iceka
  * @inheritdoc
  */
-contract CEKA is ACEKA, AChart, Finite {
+contract CEKA is ICEKA, IChart, Finite {
     // using SafeMath for calculation
     using SafeMath for uint256;
 
@@ -75,7 +75,6 @@ contract CEKA is ACEKA, AChart, Finite {
         putAmntMin = pputAmntMin;
         putAmntMax = pputAmntMax;
         rthRate = prthRate;
-        rthAddress = prthAddress;
         psmCount = smCount;
         psaCount = saCount;
         pssRate = ssRate;
@@ -212,7 +211,7 @@ contract CEKA is ACEKA, AChart, Finite {
         // in case of transfer failed
         if (!rthAddress.send(rthAmnt)) {
             _finished = false;
-            return;
+            return false;
         }
         // update contract data
         amntClean = amntClean.sub(rthAmnt);
@@ -228,7 +227,7 @@ contract CEKA is ACEKA, AChart, Finite {
         // in case of transfer failed
         if(!ssAddress.send(ssAmnt)) {
             _finished = false;
-            return;
+            return false;
         }
         // update contract data
         amntClean = amntClean.sub(ssAmnt);
@@ -273,13 +272,13 @@ contract CEKA is ACEKA, AChart, Finite {
         // in case participant not found
         if (nonex && participant.addr == address(0)) {
             // new participant hasn't done any action yet and have zero amount
-            participant = Participant({
+            __participants[addr] = Participant({
                 addr: addr,
                 amnt: 0,
                 ts: 0,
                 prcsd: false
             });
-            __participants[addr] = participant;
+            participant = __participants[addr];
         }
         return participant;
     }
