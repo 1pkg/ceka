@@ -27,11 +27,11 @@ contract Master is IFactory, Wiped {
     /// @title name preset
     string constant NAME_NE = 'n_e'; // 7. normal extra
     /// @title name preset
-    string constant NAME_LN = 'l_n'; // 8. large normal
+    string constant NAME_LU = 'l_u'; // 8. large ususal
     /// @title name preset
-    string constant NAME_LU = 'l_u'; // 9. large ususal
+    string constant NAME_LC = 'l_c'; // 9. large common
     /// @title name preset
-    string constant NAME_LE = 'l_i'; // 10. large extra
+    string constant NAME_LE = 'l_e'; // 10. large extra
 
     /// @title presets collection
     string[10] public presets = [
@@ -42,8 +42,8 @@ contract Master is IFactory, Wiped {
         NAME_NC,
         NAME_NL,
         NAME_NE,
-        NAME_LN,
         NAME_LU,
+        NAME_LC,
         NAME_LE
     ];
     
@@ -90,6 +90,7 @@ contract Master is IFactory, Wiped {
      * @dev create ceka instance depends on name preset
      * @param name name preset
      * @return ackea instance
+     * TODO add inital amount
      */
     function __create(string memory name) private returns(ICEKA) {
         if (__eq(name, NAME_SU)) {
@@ -183,7 +184,7 @@ contract Master is IFactory, Wiped {
                 4, // ssr 75% / 25%
                 cowner // ss address
             );
-        } else if (__eq(name, NAME_LN)) {
+        } else if (__eq(name, NAME_LU)) {
             return new CEKA(
                 now, // from now
                 now + 1000 hours, // 1000 hours
@@ -196,7 +197,7 @@ contract Master is IFactory, Wiped {
                 4, // ssr 75% / 25%
                 cowner // ss address
             );
-        } else if (__eq(name, NAME_LU)) {
+        } else if (__eq(name, NAME_LC)) {
             return new CEKA(
                 now, // from now
                 now + 1000 hours, // 1000 hours
