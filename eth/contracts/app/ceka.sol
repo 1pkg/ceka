@@ -75,9 +75,9 @@ contract CEKA is ICEKA, IChart, Finite {
         putAmntMin = pputAmntMin;
         putAmntMax = pputAmntMax;
         rthRate = prthRate;
-        psmCount = smCount;
-        psaCount = saCount;
-        pssRate = ssRate;
+        smCount = psmCount;
+        saCount = psaCount;
+        ssRate = pssRate;
 
         rthAddress = msg.sender;
         ssAddress = pssAddress;
