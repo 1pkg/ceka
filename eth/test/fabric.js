@@ -11,14 +11,15 @@ const HOURS = 60 * MINUTES
 contract('Fabric', async accounts => {
     it('should create small usual ceka', async () => {
         let master = await Master.new()
+        await master.send(1 * ETHER)
         await master.create('s_u')
         let addr = await master.get.call('s_u', true)
         let ceka = await CEKA.at(addr[0])
 
-        assert.equal(await ceka.amntInit.call(), 0) // TODO
-        assert.equal(await ceka.amntTotal.call(), 0) // TODO
-        assert.equal(await ceka.amntClean.call(), 0) // TODO
-        assert.equal(await ceka.amntCurrent.call(), 0) // TODO
+        assert.equal(await ceka.amntInit.call(), 10 * FINNEY)
+        assert.equal(await ceka.amntTotal.call(), 10 * FINNEY)
+        assert.equal(await ceka.amntClean.call(), 10 * FINNEY)
+        assert.equal(await ceka.amntCurrent.call(), 10 * FINNEY)
         assert.equal(await ceka.putTsDelta.call(), 6 * MINUTES)
         assert.equal(await ceka.putAmntMin.call(), 10 * SZABO)
         assert.equal(await ceka.putAmntMax.call(), 1 * ETHER)
@@ -36,14 +37,15 @@ contract('Fabric', async accounts => {
 
     it('should create small extra ceka', async () => {
         let master = await Master.new()
+        await master.send(1 * ETHER)
         await master.create('s_e')
         let addr = await master.get.call('s_e', true)
         let ceka = await CEKA.at(addr[0])
 
-        assert.equal(await ceka.amntInit.call(), 0) // TODO
-        assert.equal(await ceka.amntTotal.call(), 0) // TODO
-        assert.equal(await ceka.amntClean.call(), 0) // TODO
-        assert.equal(await ceka.amntCurrent.call(), 0) // TODO
+        assert.equal(await ceka.amntInit.call(), 10 * FINNEY)
+        assert.equal(await ceka.amntTotal.call(), 10 * FINNEY)
+        assert.equal(await ceka.amntClean.call(), 10 * FINNEY)
+        assert.equal(await ceka.amntCurrent.call(), 10 * FINNEY)
         assert.equal(await ceka.putTsDelta.call(), 6 * MINUTES)
         assert.equal(await ceka.putAmntMin.call(), 10 * SZABO)
         assert.equal(await ceka.putAmntMax.call(), 1 * ETHER)
@@ -61,14 +63,15 @@ contract('Fabric', async accounts => {
 
     it('should create normal small ceka', async () => {
         let master = await Master.new()
+        await master.send(1 * ETHER)
         await master.create('n_s')
         let addr = await master.get.call('n_s', true)
         let ceka = await CEKA.at(addr[0])
 
-        assert.equal(await ceka.amntInit.call(), 0) // TODO
-        assert.equal(await ceka.amntTotal.call(), 0) // TODO
-        assert.equal(await ceka.amntClean.call(), 0) // TODO
-        assert.equal(await ceka.amntCurrent.call(), 0) // TODO
+        assert.equal(await ceka.amntInit.call(), 25 * FINNEY)
+        assert.equal(await ceka.amntTotal.call(), 25 * FINNEY)
+        assert.equal(await ceka.amntClean.call(), 25 * FINNEY)
+        assert.equal(await ceka.amntCurrent.call(), 25 * FINNEY)
         assert.equal(await ceka.putTsDelta.call(), 6 * MINUTES)
         assert.equal(await ceka.putAmntMin.call(), 100 * SZABO)
         assert.equal(await ceka.putAmntMax.call(), 10 * ETHER)
@@ -86,14 +89,15 @@ contract('Fabric', async accounts => {
 
     it('should create normal usual ceka', async () => {
         let master = await Master.new()
+        await master.send(1 * ETHER)
         await master.create('n_u')
         let addr = await master.get.call('n_u', true)
         let ceka = await CEKA.at(addr[0])
 
-        assert.equal(await ceka.amntInit.call(), 0) // TODO
-        assert.equal(await ceka.amntTotal.call(), 0) // TODO
-        assert.equal(await ceka.amntClean.call(), 0) // TODO
-        assert.equal(await ceka.amntCurrent.call(), 0) // TODO
+        assert.equal(await ceka.amntInit.call(), 25 * FINNEY)
+        assert.equal(await ceka.amntTotal.call(), 25 * FINNEY)
+        assert.equal(await ceka.amntClean.call(), 25 * FINNEY)
+        assert.equal(await ceka.amntCurrent.call(), 25 * FINNEY)
         assert.equal(await ceka.putTsDelta.call(), 6 * MINUTES)
         assert.equal(await ceka.putAmntMin.call(), 100 * SZABO)
         assert.equal(await ceka.putAmntMax.call(), 10 * ETHER)
@@ -111,14 +115,15 @@ contract('Fabric', async accounts => {
 
     it('should create normal common ceka', async () => {
         let master = await Master.new()
+        await master.send(1 * ETHER)
         await master.create('n_c')
         let addr = await master.get.call('n_c', true)
         let ceka = await CEKA.at(addr[0])
 
-        assert.equal(await ceka.amntInit.call(), 0) // TODO
-        assert.equal(await ceka.amntTotal.call(), 0) // TODO
-        assert.equal(await ceka.amntClean.call(), 0) // TODO
-        assert.equal(await ceka.amntCurrent.call(), 0) // TODO
+        assert.equal(await ceka.amntInit.call(), 25 * FINNEY)
+        assert.equal(await ceka.amntTotal.call(), 25 * FINNEY)
+        assert.equal(await ceka.amntClean.call(), 25 * FINNEY)
+        assert.equal(await ceka.amntCurrent.call(), 25 * FINNEY)
         assert.equal(await ceka.putTsDelta.call(), 6 * MINUTES)
         assert.equal(await ceka.putAmntMin.call(), 100 * SZABO)
         assert.equal(await ceka.putAmntMax.call(), 10 * ETHER)
@@ -136,14 +141,15 @@ contract('Fabric', async accounts => {
 
     it('should create normal large ceka', async () => {
         let master = await Master.new()
+        await master.send(1 * ETHER)
         await master.create('n_l')
         let addr = await master.get.call('n_l', true)
         let ceka = await CEKA.at(addr[0])
 
-        assert.equal(await ceka.amntInit.call(), 0) // TODO
-        assert.equal(await ceka.amntTotal.call(), 0) // TODO
-        assert.equal(await ceka.amntClean.call(), 0) // TODO
-        assert.equal(await ceka.amntCurrent.call(), 0) // TODO
+        assert.equal(await ceka.amntInit.call(), 100 * FINNEY)
+        assert.equal(await ceka.amntTotal.call(), 100 * FINNEY)
+        assert.equal(await ceka.amntClean.call(), 100 * FINNEY)
+        assert.equal(await ceka.amntCurrent.call(), 100 * FINNEY)
         assert.equal(await ceka.putTsDelta.call(), 6 * MINUTES)
         assert.equal(await ceka.putAmntMin.call(), 100 * SZABO)
         assert.equal(await ceka.putAmntMax.call(), 10 * ETHER)
@@ -161,14 +167,15 @@ contract('Fabric', async accounts => {
 
     it('should create normal extra ceka', async () => {
         let master = await Master.new()
+        await master.send(1 * ETHER)
         await master.create('n_e')
         let addr = await master.get.call('n_e', true)
         let ceka = await CEKA.at(addr[0])
 
-        assert.equal(await ceka.amntInit.call(), 0) // TODO
-        assert.equal(await ceka.amntTotal.call(), 0) // TODO
-        assert.equal(await ceka.amntClean.call(), 0) // TODO
-        assert.equal(await ceka.amntCurrent.call(), 0) // TODO
+        assert.equal(await ceka.amntInit.call(), 100 * FINNEY)
+        assert.equal(await ceka.amntTotal.call(), 100 * FINNEY)
+        assert.equal(await ceka.amntClean.call(), 100 * FINNEY)
+        assert.equal(await ceka.amntCurrent.call(), 100 * FINNEY)
         assert.equal(await ceka.putTsDelta.call(), 6 * MINUTES)
         assert.equal(await ceka.putAmntMin.call(), 100 * SZABO)
         assert.equal(await ceka.putAmntMax.call(), 10 * ETHER)
@@ -186,14 +193,15 @@ contract('Fabric', async accounts => {
 
     it('should create large usual ceka', async () => {
         let master = await Master.new()
+        await master.send(1 * ETHER)
         await master.create('l_u')
         let addr = await master.get.call('l_u', true)
         let ceka = await CEKA.at(addr[0])
 
-        assert.equal(await ceka.amntInit.call(), 0) // TODO
-        assert.equal(await ceka.amntTotal.call(), 0) // TODO
-        assert.equal(await ceka.amntClean.call(), 0) // TODO
-        assert.equal(await ceka.amntCurrent.call(), 0) // TODO
+        assert.equal(await ceka.amntInit.call(), 250 * FINNEY)
+        assert.equal(await ceka.amntTotal.call(), 250 * FINNEY)
+        assert.equal(await ceka.amntClean.call(), 250 * FINNEY)
+        assert.equal(await ceka.amntCurrent.call(), 250 * FINNEY)
         assert.equal(await ceka.putTsDelta.call(), 1 * HOURS)
         assert.equal(await ceka.putAmntMin.call(), 1 * FINNEY)
         assert.equal(await ceka.putAmntMax.call(), 100 * ETHER)
@@ -211,14 +219,15 @@ contract('Fabric', async accounts => {
 
     it('should create large common ceka', async () => {
         let master = await Master.new()
+        await master.send(1 * ETHER)
         await master.create('l_c')
         let addr = await master.get.call('l_c', true)
         let ceka = await CEKA.at(addr[0])
 
-        assert.equal(await ceka.amntInit.call(), 0) // TODO
-        assert.equal(await ceka.amntTotal.call(), 0) // TODO
-        assert.equal(await ceka.amntClean.call(), 0) // TODO
-        assert.equal(await ceka.amntCurrent.call(), 0) // TODO
+        assert.equal(await ceka.amntInit.call(), 250 * FINNEY)
+        assert.equal(await ceka.amntTotal.call(), 250 * FINNEY)
+        assert.equal(await ceka.amntClean.call(), 250 * FINNEY)
+        assert.equal(await ceka.amntCurrent.call(), 250 * FINNEY)
         assert.equal(await ceka.putTsDelta.call(), 1 * HOURS)
         assert.equal(await ceka.putAmntMin.call(), 1 * FINNEY)
         assert.equal(await ceka.putAmntMax.call(), 100 * ETHER)
@@ -236,14 +245,15 @@ contract('Fabric', async accounts => {
 
     it('should create large extra ceka', async () => {
         let master = await Master.new()
+        await master.send(1 * ETHER)
         await master.create('l_e')
         let addr = await master.get.call('l_e', true)
         let ceka = await CEKA.at(addr[0])
 
-        assert.equal(await ceka.amntInit.call(), 0) // TODO
-        assert.equal(await ceka.amntTotal.call(), 0) // TODO
-        assert.equal(await ceka.amntClean.call(), 0) // TODO
-        assert.equal(await ceka.amntCurrent.call(), 0) // TODO
+        assert.equal(await ceka.amntInit.call(), 1 * ETHER)
+        assert.equal(await ceka.amntTotal.call(), 1 * ETHER)
+        assert.equal(await ceka.amntClean.call(), 1 * ETHER)
+        assert.equal(await ceka.amntCurrent.call(), 1 * ETHER)
         assert.equal(await ceka.putTsDelta.call(), 1 * HOURS)
         assert.equal(await ceka.putAmntMin.call(), 1 * FINNEY)
         assert.equal(await ceka.putAmntMax.call(), 100 * ETHER)

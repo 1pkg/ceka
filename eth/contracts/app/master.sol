@@ -86,15 +86,18 @@ contract Master is IFactory, Wiped {
         return Wiped.canwipe();
     }
 
+    // @dev receive any eth sent to the contract
+    function () external payable {
+    }
+
     /**
      * @dev create ceka instance depends on name preset
      * @param name name preset
      * @return ackea instance
-     * TODO add inital amount
      */
     function __create(string memory name) private returns(ICEKA) {
         if (__eq(name, NAME_SU)) {
-            return new CEKA(
+            return (new CEKA).value(10 finney)(
                 now, // from now
                 now + 50 hours, // 50 hours
                 6 minutes, // 0.1 hours
@@ -107,7 +110,7 @@ contract Master is IFactory, Wiped {
                 cowner // ss address
             );
         } else if (__eq(name, NAME_SE)) {
-            return new CEKA(
+            return (new CEKA).value(10 finney)(
                 now, // from now
                 now + 25 hours, // 25 hours
                 6 minutes, // 0.1 hours
@@ -120,7 +123,7 @@ contract Master is IFactory, Wiped {
                 cowner // ss address
             );
         } else if (__eq(name, NAME_NS)) {
-            return new CEKA(
+            return (new CEKA).value(25 finney)(
                 now, // from now
                 now + 100 hours, // 100 hours
                 6 minutes, // 0.1 hours
@@ -133,7 +136,7 @@ contract Master is IFactory, Wiped {
                 cowner // ss address
             );
         } else if (__eq(name, NAME_NU)) {
-            return new CEKA(
+            return (new CEKA).value(25 finney)(
                 now, // from now
                 now + 100 hours, // 100 hours
                 6 minutes, // 0.1 hours
@@ -146,7 +149,7 @@ contract Master is IFactory, Wiped {
                 cowner // ss address
             );
         } else if (__eq(name, NAME_NC)) {
-            return new CEKA(
+            return (new CEKA).value(25 finney)(
                 now, // from now
                 now + 100 hours, // 100 hours
                 6 minutes, // 0.1 hours
@@ -159,7 +162,7 @@ contract Master is IFactory, Wiped {
                 cowner // ss address
             );
         } else if (__eq(name, NAME_NL)) {
-            return new CEKA(
+            return (new CEKA).value(100 finney)(
                 now, // from now
                 now + 500 hours, // 500 hours
                 6 minutes, // 0.1 hours
@@ -172,7 +175,7 @@ contract Master is IFactory, Wiped {
                 cowner // ss address
             );
         } else if (__eq(name, NAME_NE)) {
-            return new CEKA(
+            return (new CEKA).value(100 finney)(
                 now, // from now
                 now + 500 hours, // 500 hours
                 6 minutes, // 0.1 hours
@@ -185,7 +188,7 @@ contract Master is IFactory, Wiped {
                 cowner // ss address
             );
         } else if (__eq(name, NAME_LU)) {
-            return new CEKA(
+            return (new CEKA).value(250 finney)(
                 now, // from now
                 now + 1000 hours, // 1000 hours
                 1 hours, // 1 hours
@@ -198,7 +201,7 @@ contract Master is IFactory, Wiped {
                 cowner // ss address
             );
         } else if (__eq(name, NAME_LC)) {
-            return new CEKA(
+            return (new CEKA).value(250 finney)(
                 now, // from now
                 now + 1000 hours, // 1000 hours
                 1 hours, // 1 hours
@@ -211,7 +214,7 @@ contract Master is IFactory, Wiped {
                 cowner // ss address
             );
         } else if (__eq(name, NAME_LE)) {
-            return new CEKA(
+            return (new CEKA).value(1 ether)(
                 now, // from now
                 now + 5000 hours, // 5000 hours
                 1 hours, // 1 hours
