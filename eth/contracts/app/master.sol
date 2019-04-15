@@ -76,7 +76,7 @@ contract Master is IFactory, Wiped {
              for (uint32 pidx = 0; pidx < pcontracts.length; pidx++) {
                 ICEKA pcontract = pcontracts[pidx];
                 // if any contracts wasn't got already
-                if (pcontract.finish()) {
+                if (!pcontract.finish()) {
                     return false;
                 }
             }
