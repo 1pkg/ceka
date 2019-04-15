@@ -8,6 +8,42 @@ const ETHER = 1e18
 const MINUTES = 60
 const HOURS = 60 * MINUTES
 
+timeGap = async time => {
+    await new Promise((resolve, reject) => {
+        web3.currentProvider.send(
+            {
+                jsonrpc: '2.0',
+                method: 'evm_increaseTime',
+                params: [time],
+                id: new Date().getTime(),
+            },
+            (err, result) => {
+                if (err) {
+                    return reject(err)
+                }
+                return resolve(result)
+            },
+        )
+    })
+    await new Promise((resolve, reject) => {
+        web3.currentProvider.send(
+            {
+                jsonrpc: '2.0',
+                method: 'evm_mine',
+                id: new Date().getTime(),
+            },
+            (err, result) => {
+                if (err) {
+                    return reject(err)
+                }
+                const newBlockHash = web3.eth.getBlock('latest').hash
+                return resolve(newBlockHash)
+            },
+        )
+    })
+    return Promise.resolve(web3.eth.getBlock('latest'))
+}
+
 contract('Fabric', async accounts => {
     it('should create small usual ceka', async () => {
         let master = await Master.new()
@@ -267,5 +303,121 @@ contract('Fabric', async accounts => {
             (await ceka.tsFinish.call()) - (await ceka.tsStart.call()),
             5000 * HOURS,
         )
+    })
+
+    it('should not create any ceka', async () => {
+        let master = await Master.new()
+        await master.send(1 * ETHER)
+
+        try {
+            await master.create('rnd')
+            throw null
+        } catch (error) {
+            assert(error, 'Expected name error')
+            assert(
+                error.message.includes('Invalid name preset specified'),
+                'Expected name error',
+            )
+        }
+        let addr = await master.get.call('rnd', true)
+        assert.deepEqual(addr, [])
+
+        try {
+            await master.create('_l_e_')
+            throw null
+        } catch (error) {
+            assert(error, 'Expected name error')
+            assert(
+                error.message.includes('Invalid name preset specified'),
+                'Expected name error',
+            )
+        }
+        addr = await master.get.call('_l_e_', true)
+        assert.deepEqual(addr, [])
+
+        try {
+            await master.create('su')
+            throw null
+        } catch (error) {
+            assert(error, 'Expected name error')
+            assert(
+                error.message.includes('Invalid name preset specified'),
+                'Expected name error',
+            )
+        }
+        addr = await master.get.call('su', true)
+        assert.deepEqual(addr, [])
+    })
+
+    it('should not be wiped', async () => {
+        let master = await Master.new()
+        await master.send(1 * ETHER)
+        assert(await master.canwipe.call(), 'Can be wiped at start')
+        await master.create('s_u')
+        let addr = await master.get.call('s_u', true)
+        let ceka = await CEKA.at(addr[0])
+        assert(!(await ceka.finish.call()), 'Should have one running ceka')
+        assert(
+            !(await master.canwipe.call()),
+            'Cannot be wiped with running cekas',
+        )
+    })
+
+    it('should be wiped', async () => {
+        let master = await Master.new()
+        await master.send(1 * ETHER)
+        assert(await master.canwipe.call(), 'Can be wiped at start')
+        await master.create('s_u')
+        let addr = await master.get.call('s_u', true)
+        let ceka = await CEKA.at(addr[0])
+        assert(!(await ceka.finish.call()), 'Should have one running ceka')
+        assert(
+            !(await master.canwipe.call()),
+            'Cannot be wiped after ceka create',
+        )
+        await timeGap(55 * HOURS) // travel via 55 hours
+        assert(await ceka.finish.call(), 'Should have none running ceka')
+        assert(await master.canwipe.call(), 'Can be wiped after ceka finished')
+    })
+
+    it('should not be wiped mixed', async () => {
+        let master = await Master.new()
+        await master.send(1 * ETHER)
+        assert(await master.canwipe.call(), 'Can be wiped at start')
+        await master.create('s_u')
+        await master.create('s_e')
+        let addr = await master.get.call('s_u', true)
+        let cekau = await CEKA.at(addr[0])
+        addr = await master.get.call('s_e', true)
+        let cekae = await CEKA.at(addr[0])
+        assert(!(await cekau.finish.call()), 'Should have two running cekas')
+        assert(!(await cekae.finish.call()), 'Should have two running cekas')
+        assert(
+            !(await master.canwipe.call()),
+            'Cannot be wiped after ceka create',
+        )
+        await timeGap(26 * HOURS) // travel via 26 hours
+        assert(await cekae.finish.call(), 'Should have one running ceka')
+        assert(!(await cekau.finish.call()), 'Should have one running ceka')
+        assert(
+            !(await master.canwipe.call()),
+            'Cannot be wiped with running cekas',
+        )
+    })
+
+    it('should wipe', async () => {
+        let master = await Master.new()
+        await master.send(1 * ETHER)
+        await master.create('s_u')
+        await master.get.call('s_u', true)
+        await timeGap(100 * HOURS) // travel via 100 hours
+        master.wipe.call()
+        try {
+            let addr = await master.get.call('s_u', true)
+            let ceka = await CEKA.at(addr[0])
+            throw null
+        } catch (error) {
+            assert(error, 'Expected wiped error')
+        }
     })
 })
