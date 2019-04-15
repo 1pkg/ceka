@@ -44,7 +44,7 @@ timeGap = async time => {
     return Promise.resolve(web3.eth.getBlock('latest'))
 }
 
-contract('Fabric', async accounts => {
+contract('Master', async accounts => {
     it('should create small usual ceka', async () => {
         let master = await Master.new()
         await master.send(1 * ETHER)
