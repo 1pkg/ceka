@@ -20,12 +20,8 @@ contract('FOBLL', async accounts => {
                 await fobll.slice.call(1, 1)
                 throw null
             } catch (error) {
-                assert.isNotNull(error, 'Expected name error')
-                assert.include(
-                    error.message,
-                    'Invalid indexes specified',
-                    'Expected name error',
-                )
+                assert.isNotNull(error)
+                assert.include(error.message, 'Invalid indexes specified')
             }
         })
 
@@ -39,7 +35,7 @@ contract('FOBLL', async accounts => {
                 await fobll.push(ADDR_NULL, 1 * FINNEY)
                 throw null
             } catch (error) {
-                assert.isNotNull(error, 'Expected addr error')
+                assert.isNotNull(error)
             }
         })
 
@@ -66,12 +62,8 @@ contract('FOBLL', async accounts => {
                 await fobll.slice.call(1, 1)
                 throw null
             } catch (error) {
-                assert.isNotNull(error, 'Expected name error')
-                assert.include(
-                    error.message,
-                    'Invalid indexes specified',
-                    'Expected name error',
-                )
+                assert.isNotNull(error)
+                assert.include(error.message, 'Invalid indexes specified')
             }
         })
     })
@@ -257,12 +249,8 @@ contract('FOBLL', async accounts => {
                 await fobll.slice.call(1, 2)
                 throw null
             } catch (error) {
-                assert.isNotNull(error, 'Expected name error')
-                assert.include(
-                    error.message,
-                    'Invalid indexes specified',
-                    'Expected name error',
-                )
+                assert.isNotNull(error)
+                assert.include(error.message, 'Invalid indexes specified')
             }
         })
     })
