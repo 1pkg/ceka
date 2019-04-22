@@ -7,6 +7,7 @@ contract('Master', async accounts => {
     contract('Presets', async accounts => {
         let master = null
         before(async () => {
+            // initialize master
             master = await Master.new()
             await master.send(5 * ETHER)
         })
@@ -339,6 +340,7 @@ contract('Master', async accounts => {
     contract('Wiped', async accounts => {
         let master = null
         beforeEach(async () => {
+            // initialize master
             master = await Master.new()
             await master.send(100 * FINNEY)
         })
