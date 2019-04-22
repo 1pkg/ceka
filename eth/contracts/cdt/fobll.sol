@@ -63,7 +63,7 @@ contract FOBLL is IFOLADT, Ownable {
         uint32 idx = 1; // index start from first node
         // iterate over all fobll nodes from head to tail
         address iterator = __head;
-        while (iterator != __tail || iterator == address(0)) {
+        while (iterator != __tail || iterator != address(0)) {
             Node memory node = __nodes[iterator];
             if (node.self != key) {
                 // update fobll iterator
@@ -88,7 +88,7 @@ contract FOBLL is IFOLADT, Ownable {
         uint32 lidx = 1; // index start from first node
         // iterate over all fobll nodes from head to tail
         address iterator = __head;
-        while (iterator != __tail || iterator == address(0)) {
+        while (iterator != __tail || iterator != address(0)) {
             Node memory node = __nodes[iterator];
             if (idx != lidx) {
                 // update fobll iterator
@@ -120,7 +120,7 @@ contract FOBLL is IFOLADT, Ownable {
         uint32 idx = 1; // index start from first node
         // iterate over all fobll nodes from head to tail
         address iterator = __head;
-        while (iterator != __tail || iterator == address(0)) {
+        while (iterator != __tail || iterator != address(0)) {
             Node memory node = __nodes[iterator];
             if (start > idx || finish < idx) {
                 // update fobll iterator
@@ -220,7 +220,7 @@ contract FOBLL is IFOLADT, Ownable {
             // break from place method
             // as placement was done
             return;
-        } while (iterator != __tail || iterator == address(0));
+        } while (iterator != __tail || iterator != address(0));
 
         // in case of fobll lowest new node value
         // append new node to fobll tail node
@@ -254,13 +254,13 @@ contract FOBLL is IFOLADT, Ownable {
         // in case prev node is tail node
         // declare new node as new tail node
         if (prev == __tail) {
-            __tail == key;
+            __tail = key;
         }
 
         // in case next node is head node
         // declare new node as new head node
         if (next == __head) {
-            __head == key;
+            __head = key;
         }
 
         // in case prev node exists

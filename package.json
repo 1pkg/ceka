@@ -4,6 +4,9 @@
     "dependencies": {},
     "devDependencies": {
         "bignumber.js": "^8.1.1",
+        "crypto": "^1.0.1",
+        "ethereumjs-util": "^6.1.0",
+        "ganache-cli": "^6.4.3",
         "openzeppelin-solidity": "^2.2.0",
         "solc": "^0.5.7",
         "truffle": "^5.0.10"
