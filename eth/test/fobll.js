@@ -29,6 +29,20 @@ contract('FOBLL', async accounts => {
             }
         })
 
+        it('should fail on bad push', async () => {
+            // check list is empty
+            assert.isOk(await fobll.empty.call())
+            assert.equal(await fobll.size.call(), 0)
+            assert.equal(await fobll.capacity.call(), 0)
+
+            try {
+                await fobll.push(ADDR_NULL, 1 * FINNEY)
+                throw null
+            } catch (error) {
+                assert.isNotNull(error, 'Expected addr error')
+            }
+        })
+
         it('should keep new empty list empty', async () => {
             // check list is empty
             assert.isOk(await fobll.empty.call())
@@ -317,6 +331,52 @@ contract('FOBLL', async accounts => {
             assert.equal(await fobll.index.call(addr3), 0)
         })
 
+        it('should push 3 elements to list in asc order', async () => {
+            // intialize list
+            let fobll = await FOBLL.new(3)
+
+            // check list is empty
+            assert.isOk(await fobll.empty.call())
+            assert.equal(await fobll.size.call(), 0)
+            assert.equal(await fobll.capacity.call(), 3)
+
+            // push 3 elements to list in desc order
+            let addr1 = rndAddr()
+            await fobll.push(addr1, 3 * FINNEY)
+            let addr2 = rndAddr()
+            await fobll.push(addr2, 2 * FINNEY)
+            let addr3 = rndAddr()
+            await fobll.push(addr3, 1 * FINNEY)
+
+            // check list isn't empty and all elements were placed correctly
+            assert.isNotOk(await fobll.empty.call())
+            assert.equal(await fobll.size.call(), 3)
+            assert.equal(await fobll.capacity.call(), 3)
+
+            assert.equal(await fobll.index.call(addr1), 1)
+            assert.equal(await fobll.index.call(addr2), 2)
+            assert.equal(await fobll.index.call(addr3), 3)
+
+            assert.equal(
+                (await fobll.at.call(1)).toUpperCase(),
+                addr1.toUpperCase(),
+            )
+            assert.equal(
+                (await fobll.at.call(2)).toUpperCase(),
+                addr2.toUpperCase(),
+            )
+            assert.equal(
+                (await fobll.at.call(3)).toUpperCase(),
+                addr3.toUpperCase(),
+            )
+
+            let slice = await fobll.slice.call(1, 3)
+            assert.lengthOf(slice, 3)
+            assert.equal(slice[0].toUpperCase(), addr1.toUpperCase())
+            assert.equal(slice[1].toUpperCase(), addr2.toUpperCase())
+            assert.equal(slice[2].toUpperCase(), addr3.toUpperCase())
+        })
+
         it('should push 3 elements to list in desc order', async () => {
             // intialize list
             let fobll = await FOBLL.new(3)
@@ -361,6 +421,49 @@ contract('FOBLL', async accounts => {
             assert.equal(slice[0].toUpperCase(), addr3.toUpperCase())
             assert.equal(slice[1].toUpperCase(), addr2.toUpperCase())
             assert.equal(slice[2].toUpperCase(), addr1.toUpperCase())
+        })
+
+        it('should push non full list in rnd order', async () => {
+            // intialize list
+            let fobll = await FOBLL.new(7)
+
+            // check list is empty
+            assert.isOk(await fobll.empty.call())
+            assert.equal(await fobll.size.call(), 0)
+            assert.equal(await fobll.capacity.call(), 7)
+
+            // push 7 elements to list in rnd order
+            let addr1 = rndAddr()
+            await fobll.push(addr1, 5 * FINNEY)
+            let addr2 = rndAddr()
+            await fobll.push(addr2, 2 * FINNEY)
+            let addr3 = rndAddr()
+            await fobll.push(addr3, 7 * FINNEY)
+            let addr4 = rndAddr()
+            await fobll.push(addr4, 9 * FINNEY)
+            let addr5 = rndAddr()
+            await fobll.push(addr5, 4 * FINNEY)
+
+            // check list isn't empty and all elements were placed correctly
+            assert.isNotOk(await fobll.empty.call())
+            assert.equal(await fobll.size.call(), 5)
+            assert.equal(await fobll.capacity.call(), 7)
+
+            assert.equal(await fobll.index.call(addr1), 3)
+            assert.equal(await fobll.index.call(addr2), 5)
+            assert.equal(await fobll.index.call(addr3), 2)
+            assert.equal(await fobll.index.call(addr4), 1)
+            assert.equal(await fobll.index.call(addr5), 4)
+
+            let slice = await fobll.slice.call(1, 7)
+            assert.lengthOf(slice, 7)
+            assert.equal(slice[0].toUpperCase(), addr4.toUpperCase())
+            assert.equal(slice[1].toUpperCase(), addr3.toUpperCase())
+            assert.equal(slice[2].toUpperCase(), addr1.toUpperCase())
+            assert.equal(slice[3].toUpperCase(), addr5.toUpperCase())
+            assert.equal(slice[4].toUpperCase(), addr2.toUpperCase())
+            assert.equal(slice[5].toUpperCase(), ADDR_NULL)
+            assert.equal(slice[6].toUpperCase(), ADDR_NULL)
         })
 
         it('should push 7 elements to 5 elements list in rnd order', async () => {
@@ -410,7 +513,7 @@ contract('FOBLL', async accounts => {
             assert.equal(slice[4].toUpperCase(), addr6.toUpperCase())
         })
 
-        it('should push many elements to list', async () => {
+        xit('should push many elements to list', async () => {
             // intialize list
             let fobll = await FOBLL.new(100)
 
