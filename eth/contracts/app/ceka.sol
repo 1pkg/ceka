@@ -184,7 +184,7 @@ contract CEKA is ICEKA, IChart, Finite {
         uint32 size = __fobll.size();
         uint32 fcount = count == 0 || count > size ? size : count;
         // get top slice from fobll
-        address[] memory addrs = __fobll.slice(0, fcount);
+        address[] memory addrs = __fobll.slice(1, fcount);
         uint256[] memory amnts = new uint256[](fcount);
         for(uint32 idx = 0; idx < fcount; idx++) {
             amnts[idx] = __get(addrs[idx], false).amnt;

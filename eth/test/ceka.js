@@ -286,7 +286,7 @@ contract('CEKA', async accounts => {
         })
     })
 
-    contract('Simple', async accounts => {
+    contract('Mixed', async accounts => {
         let ceka = null
         beforeEach(async () => {
             // initialize ceka
@@ -297,23 +297,54 @@ contract('CEKA', async accounts => {
             ceka = await CEKA.at(addr[0])
         })
 
-        it('should accept single put', async () => {
+        it('should correctly accept several put', async () => {
             // check inital props
             assert.equal(await ceka.amntInit.call(), 10 * FINNEY)
             assert.equal(await ceka.amntTotal.call(), 10 * FINNEY)
             assert.equal(await ceka.amntClean.call(), 10 * FINNEY)
             assert.equal(await ceka.amntCurrent.call(), 10 * FINNEY)
 
-            await ceka.put.sendTransaction({ value: 50 * SZABO })
+            // put several times
+            await ceka.put.sendTransaction({
+                value: 50 * SZABO,
+                from: accounts[0],
+            })
+            await ceka.put.sendTransaction({
+                value: 150 * SZABO,
+                from: accounts[1],
+            })
+            await ceka.put.sendTransaction({
+                value: 250 * SZABO,
+                from: accounts[2],
+            })
+            await timeGap(10 * MINUTES) // travel via 10 minutes
+            await ceka.put.sendTransaction({
+                value: 210 * SZABO,
+                from: accounts[0],
+            })
 
             // check props
             assert.equal(await ceka.amntInit.call(), 10 * FINNEY)
-            assert.equal(await ceka.amntTotal.call(), 10 * FINNEY + 50 * SZABO)
-            assert.equal(await ceka.amntClean.call(), 10 * FINNEY + 50 * SZABO)
+            assert.equal(
+                await ceka.amntTotal.call(),
+                10 * FINNEY + (50 + 150 + 250 + 210) * SZABO,
+            )
+            assert.equal(
+                await ceka.amntClean.call(),
+                10 * FINNEY + (50 + 150 + 250 + 210) * SZABO,
+            )
             assert.equal(
                 await ceka.amntCurrent.call(),
-                10 * FINNEY + 50 * SZABO,
+                10 * FINNEY + (50 + 150 + 250 + 210) * SZABO,
             )
+
+            let result = await ceka.top.call(3)
+            assert.equal(result[0][0], accounts[0])
+            assert.equal(result[1][0], 260 * SZABO)
+            assert.equal(result[0][1], accounts[2])
+            assert.equal(result[1][1], 250 * SZABO)
+            assert.equal(result[0][2], accounts[1])
+            assert.equal(result[1][2], 150 * SZABO)
         })
     })
 })
