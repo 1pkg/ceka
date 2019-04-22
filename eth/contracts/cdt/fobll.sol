@@ -116,23 +116,27 @@ contract FOBLL is IFOLADT, Ownable {
         // in case of invalid indexes specified
         require(start != 0 && finish != 0 && start <= finish && finish <= __size, "Invalid indexes specified");
 
-        address[] memory result = new address[](finish - start);
+        address[] memory result = new address[](finish - start + 1);
         uint32 idx = 1; // index start from first node
         // iterate over all fobll nodes from head to tail
         address iterator = __head;
         while (iterator != __tail || iterator != address(0)) {
             Node memory node = __nodes[iterator];
-            if (start > idx || finish < idx) {
-                // update fobll iterator
-                iterator = node.next;
-                // update iteration break index
-                ++idx;
-                // skip while we not find right nodes
-                continue;
+            
+            // in case we pass finish break 
+            if (idx > finish) {
+                break;
             }
 
             // in case we found right node 
-            result[idx - start] = node.self;
+            if (start <= idx && idx <= finish) {
+                result[idx - start] = node.self;
+            }
+
+            // update fobll iterator
+            iterator = node.next;
+            // update iteration break index
+            ++idx;
         }
         return result;
     }
