@@ -298,12 +298,8 @@ contract('Master', async accounts => {
                 await master.create('rnd')
                 throw null
             } catch (error) {
-                assert.isNotNull(error, 'Expected name error')
-                assert.include(
-                    error.message,
-                    'Invalid name preset specified',
-                    'Expected name error',
-                )
+                assert.isNotNull(error)
+                assert.include(error.message, 'Invalid name preset specified')
             }
             assert.deepEqual(await master.get.call('rnd', true), [])
 
@@ -312,12 +308,8 @@ contract('Master', async accounts => {
                 await master.create('_l_e_')
                 throw null
             } catch (error) {
-                assert.isNotNull(error, 'Expected name error')
-                assert.include(
-                    error.message,
-                    'Invalid name preset specified',
-                    'Expected name error',
-                )
+                assert.isNotNull(error)
+                assert.include(error.message, 'Invalid name preset specified')
             }
             assert.deepEqual(await master.get.call('_l_e_', true), [])
 
@@ -326,12 +318,8 @@ contract('Master', async accounts => {
                 await master.create('su')
                 throw null
             } catch (error) {
-                assert.isNotNull(error, 'Expected name error')
-                assert.include(
-                    error.message,
-                    'Invalid name preset specified',
-                    'Expected name error',
-                )
+                assert.isNotNull(error)
+                assert.include(error.message, 'Invalid name preset specified')
             }
             assert.deepEqual(await master.get.call('su', true), [])
         })
@@ -475,7 +463,7 @@ contract('Master', async accounts => {
                 await CEKA.at((await master.get.call('s_u', true))[0])
                 throw null
             } catch (error) {
-                assert.isNotNull(error, 'Expected wiped error')
+                assert.isNotNull(error)
             }
         })
     })

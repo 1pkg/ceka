@@ -174,6 +174,7 @@ contract CEKA is ICEKA, IChart, Finite {
         }
         // update contract data
         amntCurrent = amntCurrent.sub(amnt);
+        amntClean = amntClean.sub(amnt);
         emit eleave(participant.addr, amnt);
     }
 
