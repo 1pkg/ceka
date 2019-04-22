@@ -15,6 +15,8 @@ contract('Master', async accounts => {
             // create s_u ceka
             await master.create('s_u')
             let addr = await master.get.call('s_u', true)
+            assert.lengthOf(addr, 1)
+
             let ceka = await CEKA.at(addr[0])
 
             // check s_u props
@@ -41,6 +43,8 @@ contract('Master', async accounts => {
             // create s_e ceka
             await master.create('s_e')
             let addr = await master.get.call('s_e', true)
+            assert.lengthOf(addr, 1)
+
             let ceka = await CEKA.at(addr[0])
 
             // check s_e props
@@ -67,6 +71,8 @@ contract('Master', async accounts => {
             // create n_s ceka
             await master.create('n_s')
             let addr = await master.get.call('n_s', true)
+            assert.lengthOf(addr, 1)
+
             let ceka = await CEKA.at(addr[0])
 
             // check n_s props
@@ -93,6 +99,8 @@ contract('Master', async accounts => {
             // create n_u ceka
             await master.create('n_u')
             let addr = await master.get.call('n_u', true)
+            assert.lengthOf(addr, 1)
+
             let ceka = await CEKA.at(addr[0])
 
             // check n_u props
@@ -119,6 +127,8 @@ contract('Master', async accounts => {
             // create n_c ceka
             await master.create('n_c')
             let addr = await master.get.call('n_c', true)
+            assert.lengthOf(addr, 1)
+
             let ceka = await CEKA.at(addr[0])
 
             // check n_c props
@@ -145,6 +155,8 @@ contract('Master', async accounts => {
             // create n_l ceka
             await master.create('n_l')
             let addr = await master.get.call('n_l', true)
+            assert.lengthOf(addr, 1)
+
             let ceka = await CEKA.at(addr[0])
 
             // check n_l props
@@ -171,6 +183,8 @@ contract('Master', async accounts => {
             // create n_e ceka
             await master.create('n_e')
             let addr = await master.get.call('n_e', true)
+            assert.lengthOf(addr, 1)
+
             let ceka = await CEKA.at(addr[0])
 
             // check n_e props
@@ -197,6 +211,8 @@ contract('Master', async accounts => {
             // create l_u ceka
             await master.create('l_u')
             let addr = await master.get.call('l_u', true)
+            assert.lengthOf(addr, 1)
+
             let ceka = await CEKA.at(addr[0])
 
             // check l_u props
@@ -223,6 +239,8 @@ contract('Master', async accounts => {
             // create l_c ceka
             await master.create('l_c')
             let addr = await master.get.call('l_c', true)
+            assert.lengthOf(addr, 1)
+
             let ceka = await CEKA.at(addr[0])
 
             // check l_c props
@@ -249,6 +267,8 @@ contract('Master', async accounts => {
             // create l_e ceka
             await master.create('l_e')
             let addr = await master.get.call('l_e', true)
+            assert.lengthOf(addr, 1)
+
             let ceka = await CEKA.at(addr[0])
 
             // check l_e props
@@ -329,6 +349,8 @@ contract('Master', async accounts => {
 
             await master.create('s_u')
             let addr = await master.get.call('s_u', true)
+            assert.lengthOf(addr, 1)
+
             let ceka = await CEKA.at(addr[0])
 
             // can't be wiped here
@@ -348,6 +370,8 @@ contract('Master', async accounts => {
 
             await master.create('s_u')
             let addr = await master.get.call('s_u', true)
+            assert.lengthOf(addr, 1)
+
             let ceka = await CEKA.at(addr[0])
 
             // can't be wiped here
@@ -379,10 +403,14 @@ contract('Master', async accounts => {
 
             await master.create('s_u')
             await master.create('s_e')
-            let addr = await master.get.call('s_u', true)
-            let cekau = await CEKA.at(addr[0])
-            addr = await master.get.call('s_e', true)
-            let cekae = await CEKA.at(addr[0])
+
+            let addru = await master.get.call('s_u', true)
+            let addre = await master.get.call('s_e', true)
+            assert.lengthOf(addru, 1)
+            assert.lengthOf(addre, 1)
+
+            let cekau = await CEKA.at(addru[0])
+            let cekae = await CEKA.at(addre[0])
 
             // can't be wiped here
             assert.isNotOk(

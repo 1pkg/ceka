@@ -42,6 +42,6 @@ contract('FOBLL', async accounts => {
         let slice = await fobll.slice.call(1, 1)
 
         assert.lengthOf(slice, 1)
-        assert.lengthOf(slice[0].toUpperCase(), addr.toUpperCase())
+        assert.equal(slice[0].toUpperCase(), addr.toUpperCase())
     })
 })
