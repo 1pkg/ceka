@@ -8,6 +8,8 @@ const ETHER = 1e18
 const MINUTES = 60
 const HOURS = 60 * MINUTES
 
+const ADDR_NULL = '0X0000000000000000000000000000000000000000'
+
 const timeGap = async time => {
     await new Promise((resolve, reject) => {
         web3.currentProvider.send(
@@ -57,6 +59,8 @@ module.exports = {
 
     MINUTES,
     HOURS,
+
+    ADDR_NULL,
 
     timeGap,
     rndAddr,
