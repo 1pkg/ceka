@@ -4,7 +4,7 @@ const Master = artifacts.require('Master')
 const CEKA = artifacts.require('CEKA')
 
 contract('Master', async accounts => {
-    contract('All ceka presets', async accounts => {
+    contract('Presets', async accounts => {
         let master = null
         before(async () => {
             master = await Master.new()
@@ -336,7 +336,7 @@ contract('Master', async accounts => {
         })
     })
 
-    contract('Wipe conditionals', async accounts => {
+    contract('Wiped', async accounts => {
         let master = null
         beforeEach(async () => {
             master = await Master.new()

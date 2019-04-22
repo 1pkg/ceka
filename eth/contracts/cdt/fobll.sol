@@ -47,7 +47,7 @@ contract FOBLL is IFOLADT, Ownable {
         // than break from place method
         // as placement was done already
         if (empty()) {
-            __between(key, value, address(0), address(0));
+            __between(key, value, address(0), address(0), true);
             return;
         }
     
@@ -212,7 +212,7 @@ contract FOBLL is IFOLADT, Ownable {
             }
 
             // add new node to the fobll before current node
-            __between(key, value, node.prev, node.self);
+            __between(key, value, node.prev, node.self, false);
 
             // in case placement done in middle of fobll
             // and fobll size growth over capacity
@@ -228,15 +228,8 @@ contract FOBLL is IFOLADT, Ownable {
 
         // in case of fobll lowest new node value
         // append new node to fobll tail node
-
-        // in case fobll is already full
-        // break from place method
-        if (__size >= __capacity) {
-            return;
-        }
-
         // add new node to the end of fobll
-        __between(key, value, __tail, address(0));
+        __between(key, value, __tail, address(0), true);
     }
 
     /**
@@ -245,8 +238,15 @@ contract FOBLL is IFOLADT, Ownable {
      * @param value value of new node
      * @param prev ptr to prev node
      * @param next prt to next node
+     * @param constraint flag that consider size constraint
      */
-    function __between(address key, uint256 value, address prev, address next) private {
+    function __between(address key, uint256 value, address prev, address next, bool constraint) private {
+        // in case fobll is already full
+        // break from between method
+        if (constraint && __size >= __capacity) {
+            return;
+        }
+
         // add new node to the fobll before next node and prev node 
         __nodes[key] = Node({
             value: value,
