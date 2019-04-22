@@ -343,7 +343,7 @@ contract('Master', async accounts => {
             await master.send(100 * FINNEY)
         })
 
-        it('should not be wiped', async () => {
+        it('should start as not can wipe', async () => {
             // can't be wiped here
             assert.isOk(await master.canwipe.call(), 'Can be wiped at start')
 
@@ -364,7 +364,7 @@ contract('Master', async accounts => {
             )
         })
 
-        it('should be wiped', async () => {
+        it('should became can wipe', async () => {
             // can't be wiped here
             assert.isOk(await master.canwipe.call(), 'Can be wiped at start')
 
@@ -397,7 +397,7 @@ contract('Master', async accounts => {
             )
         })
 
-        it('should not be wiped mixed', async () => {
+        it('should not became can wipe mixed', async () => {
             // can't be wiped here
             assert.isOk(await master.canwipe.call(), 'Can be wiped at start')
 
@@ -470,9 +470,8 @@ contract('Master', async accounts => {
             // now it can be wiped
             master.wipe.call()
             try {
-                let addr = await master.get.call('s_u', true)
-                let ceka = await CEKA.at(addr[0])
-                throw ceka
+                await CEKA.at((await master.get.call('s_u', true))[0])
+                throw null
             } catch (error) {
                 assert.isNotNull(error, 'Expected wiped error')
             }

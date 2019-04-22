@@ -62,12 +62,18 @@ contract FOBLL is IFOLADT, Ownable {
 
         uint32 idx = 1; // index start from first node
         // iterate over all fobll nodes from head to tail
-        address iterator = __head;
-        while (iterator != __tail || iterator != address(0)) {
-            Node memory node = __nodes[iterator];
+        address it = __head;
+        address end = __nodes[__tail].next;
+        while (it != end) {
+            // in case we pass finish break 
+            if (idx > __capacity) {
+                break;
+            }
+
+            Node memory node = __nodes[it];
             if (node.self != key) {
                 // update fobll iterator
-                iterator = node.next;
+                it = node.next;
                 // update iteration break index
                 ++idx;
                 // skip while we not find right node
@@ -83,16 +89,22 @@ contract FOBLL is IFOLADT, Ownable {
     /// inheritdoc
     function at(uint32 idx) public view returns(address) {
         // in case of invalid index specified
-        require(idx != 0 && idx <= __size, "Invalid index specified");
+        require(idx != 0 && idx <= __capacity, "Invalid index specified");
 
         uint32 lidx = 1; // index start from first node
         // iterate over all fobll nodes from head to tail
-        address iterator = __head;
-        while (iterator != __tail || iterator != address(0)) {
-            Node memory node = __nodes[iterator];
+        address it = __head;
+        address end = __nodes[__tail].next;
+        while (it != end) {
+            // in case we pass finish break 
+            if (lidx > idx) {
+                break;
+            }
+
+            Node memory node = __nodes[it];
             if (idx != lidx) {
                 // update fobll iterator
-                iterator = node.next;
+                it = node.next;
                 // update iteration break index
                 ++lidx;
                 // skip while we not find right node
@@ -119,22 +131,22 @@ contract FOBLL is IFOLADT, Ownable {
         address[] memory result = new address[](finish - start + 1);
         uint32 idx = 1; // index start from first node
         // iterate over all fobll nodes from head to tail
-        address iterator = __head;
-        while (iterator != __tail || iterator != address(0)) {
-            Node memory node = __nodes[iterator];
-            
+        address it = __head;
+        address end = __nodes[__tail].next;
+        while (it != end) {
             // in case we pass finish break 
             if (idx > finish) {
                 break;
             }
 
+            Node memory node = __nodes[it];
             // in case we found right node 
             if (start <= idx && idx <= finish) {
                 result[idx - start] = node.self;
             }
 
             // update fobll iterator
-            iterator = node.next;
+            it = node.next;
             // update iteration break index
             ++idx;
         }
@@ -191,12 +203,13 @@ contract FOBLL is IFOLADT, Ownable {
     function __place(address key, uint256 value) private {
         uint32 idx = 1; // index start from first node
         // iterate over all fobll nodes from head to tail
-        address iterator = __head;
+        address it = __head;
+        address end = __nodes[__tail].next;
         do {
-            Node memory node = __nodes[iterator];
+            Node memory node = __nodes[it];
             if (node.value >= value) {
                 // update fobll iterator
-                iterator = node.next;
+                it = node.next;
                 // update iteration break index
                 ++idx;
                 // skip between action
@@ -224,7 +237,7 @@ contract FOBLL is IFOLADT, Ownable {
             // break from place method
             // as placement was done
             return;
-        } while (iterator != __tail || iterator != address(0));
+        } while (it != end);
 
         // in case of fobll lowest new node value
         // append new node to fobll tail node
