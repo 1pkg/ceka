@@ -316,5 +316,53 @@ contract('FOBLL', async accounts => {
             assert.equal(slice[1].toUpperCase(), addr2.toUpperCase())
             assert.equal(slice[2].toUpperCase(), addr1.toUpperCase())
         })
+
+        it('should push 7 elements to 5 elements list in rnd order', async () => {
+            // intialize single item list
+            let fobll = await FOBLL.new(5)
+
+            // check list is empty
+            assert.isOk(await fobll.empty.call())
+            assert.equal(await fobll.size.call(), 0)
+            assert.equal(await fobll.capacity.call(), 5)
+
+            // push 7 elements to list in rnd order
+            let addr1 = rndAddr()
+            await fobll.push(addr1, 3 * FINNEY)
+            let addr2 = rndAddr()
+            await fobll.push(addr2, 5 * FINNEY)
+            let addr3 = rndAddr()
+            await fobll.push(addr3, 2 * FINNEY)
+            let addr4 = rndAddr()
+            await fobll.push(addr4, 8 * FINNEY)
+            let addr5 = rndAddr()
+            await fobll.push(addr5, 1 * FINNEY)
+            let addr6 = rndAddr()
+            await fobll.push(addr6, 3 * FINNEY)
+            let addr7 = rndAddr()
+            await fobll.push(addr7, 4 * FINNEY)
+
+            // check list isn't empty and all elements were placed correctly
+            assert.isNotOk(await fobll.empty.call())
+            assert.equal(await fobll.size.call(), 5)
+            assert.equal(await fobll.capacity.call(), 5)
+
+            assert.equal(await fobll.index.call(addr1), 4)
+            assert.equal(await fobll.index.call(addr2), 2)
+            assert.equal(await fobll.index.call(addr3), 0)
+            assert.equal(await fobll.index.call(addr4), 1)
+            assert.equal(await fobll.index.call(addr5), 0)
+            assert.equal(await fobll.index.call(addr6), 5)
+            assert.equal(await fobll.index.call(addr7), 3)
+
+            let slice = await fobll.slice.call(1, 5)
+
+            assert.lengthOf(slice, 5)
+            assert.equal(slice[0].toUpperCase(), addr4.toUpperCase())
+            assert.equal(slice[1].toUpperCase(), addr2.toUpperCase())
+            assert.equal(slice[2].toUpperCase(), addr7.toUpperCase())
+            assert.equal(slice[3].toUpperCase(), addr1.toUpperCase())
+            assert.equal(slice[4].toUpperCase(), addr6.toUpperCase())
+        })
     })
 })
