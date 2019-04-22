@@ -114,7 +114,7 @@ contract FOBLL is IFOLADT, Ownable {
     /// inheritdoc
     function slice(uint32 start, uint32 finish) external view returns(address[] memory) {
         // in case of invalid indexes specified
-        require(start != 0 && finish != 0 && start <= finish && finish <= __size, "Invalid indexes specified");
+        require(start != 0 && finish != 0 && start <= finish && finish <= __capacity, "Invalid indexes specified");
 
         address[] memory result = new address[](finish - start + 1);
         uint32 idx = 1; // index start from first node
