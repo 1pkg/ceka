@@ -299,10 +299,11 @@ contract('CEKA', async accounts => {
     })
 
     contract('Mixed', async accounts => {
+        let master = null
         let ceka = null
         beforeEach(async () => {
             // initialize ceka
-            let master = await Master.new()
+            master = await Master.new()
             await master.send(100 * FINNEY)
             await master.create('s_u')
             let addr = await master.get.call('s_u', true)
@@ -359,13 +360,13 @@ contract('CEKA', async accounts => {
             assert.equal(result[1][2], 150 * SZABO)
         })
 
-        it('should correctly proceed leave', async () => {
+        it('should correctly proceed single leave', async () => {
             // check inital props
             assert.equal(await ceka.amntInit.call(), 10 * FINNEY)
             assert.equal(await ceka.amntTotal.call(), 10 * FINNEY)
             assert.equal(await ceka.amntClean.call(), 10 * FINNEY)
             assert.equal(await ceka.amntCurrent.call(), 10 * FINNEY)
-            let initalBalance = 1 * (await web3.eth.getBalance(accounts[1]))
+            let initBalance = 1 * (await web3.eth.getBalance(accounts[1]))
 
             // put than leave
             await ceka.put.sendTransaction({
@@ -389,19 +390,22 @@ contract('CEKA', async accounts => {
             )
             let curBalance = 1 * (await web3.eth.getBalance(accounts[1]))
             assert.approximately(
-                initalBalance,
+                initBalance,
                 curBalance + 50 * FINNEY,
-                10 * FINNEY,
+                10 * FINNEY, // cause of all gas operations
             )
         })
 
-        it('should correctly proceed get', async () => {
+        it('should correctly proceed single get', async () => {
             // check inital props
             assert.equal(await ceka.amntInit.call(), 10 * FINNEY)
             assert.equal(await ceka.amntTotal.call(), 10 * FINNEY)
             assert.equal(await ceka.amntClean.call(), 10 * FINNEY)
             assert.equal(await ceka.amntCurrent.call(), 10 * FINNEY)
-            let initalBalance = 1 * (await web3.eth.getBalance(accounts[1]))
+            let initBalanceUser = 1 * (await web3.eth.getBalance(accounts[1]))
+            let initBalanceMaster =
+                1 * (await web3.eth.getBalance(master.address))
+            let initBalanceOwner = 1 * (await web3.eth.getBalance(accounts[0]))
 
             // put than get
             await ceka.put.sendTransaction({
@@ -429,11 +433,24 @@ contract('CEKA', async accounts => {
                 67 * FINNEY - 33 * FINNEY,
                 FINNEY,
             )
-            let curBalance = 1 * (await web3.eth.getBalance(accounts[1]))
+            let curBalanceUser = 1 * (await web3.eth.getBalance(accounts[1]))
             assert.approximately(
-                initalBalance,
-                curBalance + 67 * FINNEY,
-                10 * FINNEY,
+                initBalanceUser,
+                curBalanceUser + 67 * FINNEY,
+                10 * FINNEY, // cause of all gas operations
+            )
+            let curBalanceMaster =
+                1 * (await web3.eth.getBalance(master.address))
+            assert.approximately(
+                initBalanceMaster,
+                curBalanceMaster - 27.5 * FINNEY,
+                FINNEY,
+            )
+            let curBalanceOwner = 1 * (await web3.eth.getBalance(accounts[0]))
+            assert.approximately(
+                initBalanceOwner,
+                curBalanceOwner - 15.5 * FINNEY,
+                FINNEY,
             )
         })
     })

@@ -36,7 +36,7 @@ contract FOBLL is IFOLADT, Ownable {
     /// inheritdoc
     function push(address key, uint256 value) external owner {
         // in case of invalid address specified
-        require(key != address(0), "Invalid key specified");
+        require(key != address(0), "Invalid push key specified");
 
         // before start placement remove node from fobll
         // replace node everytime isntead of update existed value
@@ -58,7 +58,7 @@ contract FOBLL is IFOLADT, Ownable {
     /// inheritdoc
     function index(address key) external view returns(uint32) {
         // in case of invalid address specified
-        require(key != address(0), "Invalid key specified");
+        require(key != address(0), "Invalid index key specified");
 
         uint32 idx = 1; // index start from first node
         // iterate over all fobll nodes from head to tail
@@ -126,7 +126,7 @@ contract FOBLL is IFOLADT, Ownable {
     /// inheritdoc
     function slice(uint32 start, uint32 finish) external view returns(address[] memory) {
         // in case of invalid indexes specified
-        require(start != 0 && finish != 0 && start <= finish && finish <= __capacity, "Invalid indexes specified");
+        require(start != 0 && finish != 0 && start <= finish && finish <= __capacity, "Invalid slice indexes specified");
 
         address[] memory result = new address[](finish - start + 1);
         uint32 idx = 1; // index start from first node

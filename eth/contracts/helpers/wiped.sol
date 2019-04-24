@@ -9,7 +9,7 @@ contract Wiped is Ownable {
 
     /// @dev transfer all funds to the owner and wipe out the contract
     function wipe() public owner {
-        require(canwipe(), "Invalid canwipe breaks"); 
+        require(canwipe(), "Invalid flag breaks canwipe constraint"); 
         selfdestruct(cowner);
         emit ewipe(now);
     }
