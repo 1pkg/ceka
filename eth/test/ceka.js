@@ -15,7 +15,7 @@ contract('CEKA', async accounts => {
             ceka = await CEKA.at(addr[0])
         })
 
-        it('should not accept put less than min put amount', async () => {
+        it('should not accept put non limit amount', async () => {
             // check inital props
             assert.equal(await ceka.amntInit.call(), 10 * FINNEY)
             assert.equal(await ceka.amntTotal.call(), 10 * FINNEY)
@@ -25,6 +25,18 @@ contract('CEKA', async accounts => {
             // put less than min put amnt
             try {
                 await ceka.put.sendTransaction({ value: 9 * SZABO })
+                throw null
+            } catch (error) {
+                assert.isNotNull(error)
+                assert.include(
+                    error.message,
+                    'Invalid put value, amount breaks min/max contract constraint',
+                )
+            }
+
+            // put greater than max put amnt
+            try {
+                await ceka.put.sendTransaction({ value: 2 * ETHER })
                 throw null
             } catch (error) {
                 assert.isNotNull(error)
@@ -297,7 +309,7 @@ contract('CEKA', async accounts => {
             ceka = await CEKA.at(addr[0])
         })
 
-        it('should correctly accept several put', async () => {
+        it('should correctly proceed several put', async () => {
             // check inital props
             assert.equal(await ceka.amntInit.call(), 10 * FINNEY)
             assert.equal(await ceka.amntTotal.call(), 10 * FINNEY)
@@ -345,6 +357,84 @@ contract('CEKA', async accounts => {
             assert.equal(result[1][1], 250 * SZABO)
             assert.equal(result[0][2], accounts[1])
             assert.equal(result[1][2], 150 * SZABO)
+        })
+
+        it('should correctly proceed leave', async () => {
+            // check inital props
+            assert.equal(await ceka.amntInit.call(), 10 * FINNEY)
+            assert.equal(await ceka.amntTotal.call(), 10 * FINNEY)
+            assert.equal(await ceka.amntClean.call(), 10 * FINNEY)
+            assert.equal(await ceka.amntCurrent.call(), 10 * FINNEY)
+            let initalBalance = 1 * (await web3.eth.getBalance(accounts[1]))
+
+            // put than leave
+            await ceka.put.sendTransaction({
+                value: 100 * FINNEY,
+                from: accounts[1],
+            })
+            await ceka.leave.sendTransaction({
+                from: accounts[1],
+            })
+
+            // check props
+            assert.equal(await ceka.amntInit.call(), 10 * FINNEY)
+            assert.equal(
+                await ceka.amntTotal.call(),
+                10 * FINNEY + 100 * FINNEY,
+            )
+            assert.equal(await ceka.amntClean.call(), 10 * FINNEY + 50 * FINNEY)
+            assert.equal(
+                await ceka.amntCurrent.call(),
+                10 * FINNEY + 50 * FINNEY,
+            )
+            let curBalance = 1 * (await web3.eth.getBalance(accounts[1]))
+            assert.approximately(
+                initalBalance,
+                curBalance + 50 * FINNEY,
+                10 * FINNEY,
+            )
+        })
+
+        it('should correctly proceed get', async () => {
+            // check inital props
+            assert.equal(await ceka.amntInit.call(), 10 * FINNEY)
+            assert.equal(await ceka.amntTotal.call(), 10 * FINNEY)
+            assert.equal(await ceka.amntClean.call(), 10 * FINNEY)
+            assert.equal(await ceka.amntCurrent.call(), 10 * FINNEY)
+            let initalBalance = 1 * (await web3.eth.getBalance(accounts[1]))
+
+            // put than get
+            await ceka.put.sendTransaction({
+                value: 100 * FINNEY,
+                from: accounts[1],
+            })
+            await timeGap(55 * HOURS) // travel via 55 hours
+            await ceka.get.sendTransaction({
+                from: accounts[1],
+            })
+
+            // check props
+            assert.equal(await ceka.amntInit.call(), 10 * FINNEY)
+            assert.equal(
+                await ceka.amntTotal.call(),
+                10 * FINNEY + 100 * FINNEY,
+            )
+            assert.approximately(
+                1 * (await ceka.amntClean.call()).toString(),
+                67 * FINNEY,
+                FINNEY,
+            )
+            assert.approximately(
+                1 * (await ceka.amntCurrent.call()).toString(),
+                67 * FINNEY - 33 * FINNEY,
+                FINNEY,
+            )
+            let curBalance = 1 * (await web3.eth.getBalance(accounts[1]))
+            assert.approximately(
+                initalBalance,
+                curBalance + 67 * FINNEY,
+                10 * FINNEY,
+            )
         })
     })
 })
