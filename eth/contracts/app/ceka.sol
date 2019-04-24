@@ -219,7 +219,8 @@ contract CEKA is ICEKA, IChart, Finite {
         amntCurrent = amntClean;
 
         // transfer sub succesor funds and update contract data
-        uint32 ssIdx = smCount + 1;
+        uint32 size = __fobll.size();
+        uint32 ssIdx = size < smCount ? size + 1 : smCount + 1;
         uint256 ssAmnt = amntClean.sub(amntClean.div(ssRate));
         for (uint32 idx = 1; idx <= ssIdx; idx++) {
             ssAmnt = ssAmnt.div(2);
@@ -250,6 +251,9 @@ contract CEKA is ICEKA, IChart, Finite {
             return 0;
         }
 
+        uint32 fsize = __fobll.size();
+        uint32 saCounta = fsize < saCount ? fsize + 1 : saCount;
+
         uint256 amntCalc = 0;
         uint amntSplit = amntClean.div(ssRate);
         if (index <= smCount) {
@@ -258,7 +262,7 @@ contract CEKA is ICEKA, IChart, Finite {
                 amntCalc = amntCalc.div(2);
             }
         }
-        amntCalc = amntCalc.add(amntSplit.div(smCount));
+       amntCalc = amntCalc.add(amntSplit.div(saCounta));
         return amntCalc;
     }
 
