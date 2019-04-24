@@ -57,6 +57,7 @@ contract Master is IFactory, Wiped {
     /// inheritdoc
     function get(string calldata name, bool active) external owner returns(ICEKA[] memory) {
         ICEKA[] memory pcontracts = contracts[name];
+        require(pcontracts.length > 0, "Invalid or non existed name specified");
         ICEKA[] memory result = new ICEKA[](pcontracts.length);
         for (uint32 pidx = 0; pidx < pcontracts.length; pidx++) {
             ICEKA pcontract = pcontracts[pidx];

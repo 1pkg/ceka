@@ -11,4 +11,6 @@ interface IChart {
 
     /// @dev emit on success chart update action
     event eupdate(address addr, uint256 amnt, uint32 index);
+    /// @dev emit on any chart size update action
+    event egrowth(uint32 size);
 }

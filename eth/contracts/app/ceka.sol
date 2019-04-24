@@ -45,6 +45,9 @@ contract CEKA is ICEKA, IChart, Finite {
     /// @title contract sub successor adress
     address payable public ssAddress;
 
+    /// @dev emit on success funds return
+    event ereturn(address addr, uint256 amnt);
+
     /**
      * @dev initialize ceka
      * @param ptsStart max start time_stamp
@@ -138,8 +141,16 @@ contract CEKA is ICEKA, IChart, Finite {
         amntCurrent = amntCurrent.add(amnt);
 
         // update fobll and emit event
+        uint32 size = __fobll.size();
         __fobll.push(participant.addr, participant.amnt);
         emit eput(participant.addr, amnt);
+
+        // check new size
+        uint32 nsize = __fobll.size();
+        // in case list is growing emit event
+        if (size < nsize) {
+            emit egrowth(nsize);
+        }
 
         // find index of participant in fobll
         uint32 idx = __fobll.index(participant.addr);
@@ -217,6 +228,7 @@ contract CEKA is ICEKA, IChart, Finite {
         // update contract data
         amntClean = amntClean.sub(rthAmnt);
         amntCurrent = amntClean;
+        emit ereturn(rthAddress, rthAmnt);
 
         // transfer sub succesor funds and update contract data
         uint32 size = __fobll.size();
@@ -234,6 +246,7 @@ contract CEKA is ICEKA, IChart, Finite {
         // update contract data
         amntClean = amntClean.sub(ssAmnt);
         amntCurrent = amntClean;
+        emit ereturn(ssAddress, ssAmnt);
 
         // finis is done now
         // contract is swithched in get phase

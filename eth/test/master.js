@@ -301,7 +301,6 @@ contract('Master', async accounts => {
                 assert.isNotNull(error)
                 assert.include(error.message, 'Invalid name preset specified')
             }
-            assert.deepEqual(await master.get.call('rnd', true), [])
 
             // bad preset
             try {
@@ -311,7 +310,6 @@ contract('Master', async accounts => {
                 assert.isNotNull(error)
                 assert.include(error.message, 'Invalid name preset specified')
             }
-            assert.deepEqual(await master.get.call('_l_e_', true), [])
 
             // bad preset
             try {
@@ -321,7 +319,30 @@ contract('Master', async accounts => {
                 assert.isNotNull(error)
                 assert.include(error.message, 'Invalid name preset specified')
             }
-            assert.deepEqual(await master.get.call('su', true), [])
+
+            // bad preset
+            try {
+                await master.get('__', true)
+                throw null
+            } catch (error) {
+                assert.isNotNull(error)
+                assert.include(
+                    error.message,
+                    'Invalid or non existed name specified',
+                )
+            }
+
+            // bad preset
+            try {
+                await master.get('rnd', true)
+                throw null
+            } catch (error) {
+                assert.isNotNull(error)
+                assert.include(
+                    error.message,
+                    'Invalid or non existed name specified',
+                )
+            }
         })
     })
 

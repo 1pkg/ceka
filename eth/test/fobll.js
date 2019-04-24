@@ -21,7 +21,7 @@ contract('FOBLL', async accounts => {
                 throw null
             } catch (error) {
                 assert.isNotNull(error)
-                assert.include(error.message, 'Invalid indexes specified')
+                assert.include(error.message, 'Invalid slice indexes specified')
             }
         })
 
@@ -63,7 +63,7 @@ contract('FOBLL', async accounts => {
                 throw null
             } catch (error) {
                 assert.isNotNull(error)
-                assert.include(error.message, 'Invalid indexes specified')
+                assert.include(error.message, 'Invalid slice indexes specified')
             }
         })
     })
@@ -250,7 +250,7 @@ contract('FOBLL', async accounts => {
                 throw null
             } catch (error) {
                 assert.isNotNull(error)
-                assert.include(error.message, 'Invalid indexes specified')
+                assert.include(error.message, 'Invalid slice indexes specified')
             }
         })
     })
