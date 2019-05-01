@@ -501,7 +501,7 @@ contract('FOBLL', async accounts => {
             assert.equal(slice[4].toUpperCase(), addr6.toUpperCase())
         })
 
-        xit('should push many elements to list', async () => {
+        it('should push 1000 elements to 100 list in rnd order', async () => {
             // intialize list
             let fobll = await FOBLL.new(100)
 
