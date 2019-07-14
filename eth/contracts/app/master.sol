@@ -46,7 +46,7 @@ contract Master is IFactory, Wiped {
         NAME_LC,
         NAME_LE
     ];
-    
+
      /// inheritdoc
     function create(string calldata name) external owner returns(ICEKA) {
         ICEKA instance = __create(name);

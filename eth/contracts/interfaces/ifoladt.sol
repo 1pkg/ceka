@@ -1,7 +1,7 @@
 pragma solidity 0.5.7;
 
 /**
- * @title fixed ordered list abstract data type keep limited elements number with specific payload order 
+ * @title fixed ordered list abstract data type keep limited elements number with specific payload order
  * @dev each elements [key element identifier => payload element value]
  */
 interface IFOLADT {
