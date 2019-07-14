@@ -42,7 +42,7 @@ contract FOBLL is IFOLADT, Ownable {
         // replace node everytime isntead of update existed value
         __remove(key);
 
-        // in case of empty fobll 
+        // in case of empty fobll
         // place single node into fobll
         // than break from place method
         // as placement was done already
@@ -50,7 +50,7 @@ contract FOBLL is IFOLADT, Ownable {
             __between(key, value, address(0), address(0), true);
             return;
         }
-    
+
         // start common place flow
         __place(key, value);
     }
@@ -65,7 +65,7 @@ contract FOBLL is IFOLADT, Ownable {
         address it = __head;
         address end = __nodes[__tail].next;
         while (it != end) {
-            // in case we pass finish break 
+            // in case we pass finish break
             if (idx > __capacity) {
                 break;
             }
@@ -80,7 +80,7 @@ contract FOBLL is IFOLADT, Ownable {
                 continue;
             }
 
-            // in case we found right node 
+            // in case we found right node
             return idx;
         }
         return 0;
@@ -96,7 +96,7 @@ contract FOBLL is IFOLADT, Ownable {
         address it = __head;
         address end = __nodes[__tail].next;
         while (it != end) {
-            // in case we pass finish break 
+            // in case we pass finish break
             if (lidx > idx) {
                 break;
             }
@@ -111,7 +111,7 @@ contract FOBLL is IFOLADT, Ownable {
                 continue;
             }
 
-            // in case we found right node 
+            // in case we found right node
             return node.self;
         }
         return address(0);
@@ -134,13 +134,13 @@ contract FOBLL is IFOLADT, Ownable {
         address it = __head;
         address end = __nodes[__tail].next;
         while (it != end) {
-            // in case we pass finish break 
+            // in case we pass finish break
             if (idx > finish) {
                 break;
             }
 
             Node memory node = __nodes[it];
-            // in case we found right node 
+            // in case we found right node
             if (start <= idx && idx <= finish) {
                 result[idx - start] = node.self;
             }
@@ -160,7 +160,7 @@ contract FOBLL is IFOLADT, Ownable {
      */
     function __remove(address key) private {
         Node memory node = __nodes[key];
-        // in case node not exists 
+        // in case node not exists
         if (node.self == address(0)) {
             return;
         }
@@ -260,7 +260,7 @@ contract FOBLL is IFOLADT, Ownable {
             return;
         }
 
-        // add new node to the fobll before next node and prev node 
+        // add new node to the fobll before next node and prev node
         __nodes[key] = Node({
             value: value,
             self: key,
@@ -314,7 +314,7 @@ contract FOBLL is IFOLADT, Ownable {
     }
     /// @title nodes mapping of fobll
     mapping(address => Node) private __nodes;
-    
+
     /// @title head ptr of fobll
     address private __head;
     /// @title tail ptr of fobll
