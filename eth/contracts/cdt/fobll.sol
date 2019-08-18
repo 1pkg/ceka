@@ -197,7 +197,7 @@ contract FOBLL is IFOLADT, Ownable {
 
     /**
      * @dev place node into the fobll by order, correctly processed single item fobll and multi items fobll
-     * @param key adress of new node
+     * @param key address of new node
      * @param value value of new node
      */
     function __place(address key, uint256 value) private {
@@ -247,7 +247,7 @@ contract FOBLL is IFOLADT, Ownable {
 
     /**
      * @dev create new node with address and value between prev address and next address
-     * @param key adress of new node
+     * @param key address of new node
      * @param value value of new node
      * @param prev ptr to prev node
      * @param next prt to next node

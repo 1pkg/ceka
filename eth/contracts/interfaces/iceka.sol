@@ -1,6 +1,6 @@
 pragma solidity 0.5.7;
 
-/// @title abstract crypto e-redistribution kindly application interface
+/// @title abstract crypto e(ethereum)-redistribution kind application interface
 interface ICEKA {
     /**
      * @dev put obtained amount to participiant accordingly with contract constraints

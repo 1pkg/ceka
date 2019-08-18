@@ -527,11 +527,12 @@ contract('FOBLL', async accounts => {
                     await fobll.push(members[index].addr, members[index].value)
                 }
 
-                // print % of execution
-                if (i % 100 == 0) {
-                    console.log((i / 1000) * 100 + '%')
+                // print execution process
+                if (i % 10 == 0) {
+                    process.stdout.write('.')
                 }
             }
+            process.stdout.write('\n')
             // stable sort
             members.sort((first, second) => {
                 if (second.value == first.value) {
