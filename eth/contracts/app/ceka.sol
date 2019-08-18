@@ -8,7 +8,7 @@ import "./../cdt/fobll.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
- * @title crypto e-redistribution kindly application implementation of iceka
+ * @title crypto e(ethereum)-redistribution kind application implementation of iceka
  * inheritdoc
  */
 contract CEKA is ICEKA, IChart, Finite {
@@ -42,7 +42,7 @@ contract CEKA is ICEKA, IChart, Finite {
     uint32 public saCount;
     /// @title contract successors split rate
     uint32 public ssRate;
-    /// @title contract sub successor adress
+    /// @title contract sub successor address
     address payable public ssAddress;
 
     /// @dev emit on success funds return
@@ -59,7 +59,7 @@ contract CEKA is ICEKA, IChart, Finite {
      * @param psmCount successors main count
      * @param psaCount successors all count
      * @param pssRate successors split rate
-    * @param pssAddress sub successor adress
+    * @param pssAddress sub successor address
      */
     constructor(
         uint256 ptsStart,
